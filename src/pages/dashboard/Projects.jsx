@@ -1,185 +1,382 @@
-import { useState } from "react";
-import { FiFolder, FiUsers, FiClock, FiPlus, FiMoreVertical, FiTrendingUp } from "react-icons/fi";
+import { useMemo, useState } from "react";
+import {
+  FiFolder, FiUsers, FiClock, FiPlus, FiTrendingUp,
+  FiSearch, FiGrid, FiList, FiCalendar, FiChevronDown,
+  FiMoreVertical, FiEye, FiEdit, FiTrash2, FiFolder as FiFolderIcon,
+} from "react-icons/fi";
 
 const initialProjects = [
   {
-    id: 1, name: "Client Portal", client: "Acme Corp", team: 4, progress: 72,
-    status: "Active", due: "2026-06-15", color: "#2563eb", bg: "#eff6ff",
-    hours: "142 hrs", desc: "Full-stack web application with real-time dashboards and reporting.",
+    id: 1,
+    name: "Client Portal",
+    client: "Acme Corp",
+    team: 4,
+    progress: 72,
+    status: "Active",
+    due: "15 Jun 2026",
+    hours: "142 hrs",
+    desc: "Full-stack web application with real-time dashboards and reporting.",
   },
   {
-    id: 2, name: "Internal Tools", client: "Colan HQ", team: 2, progress: 45,
-    status: "Active", due: "2026-06-30", color: "#7c3aed", bg: "#f5f3ff",
-    hours: "68 hrs", desc: "Employee productivity tools including timesheet and HR systems.",
+    id: 2,
+    name: "Internal Tools",
+    client: "Colan HQ",
+    team: 2,
+    progress: 45,
+    status: "Active",
+    due: "30 Jun 2026",
+    hours: "68 hrs",
+    desc: "Employee productivity tools including timesheet and HR systems.",
   },
   {
-    id: 3, name: "E-Commerce Redesign", client: "RetailMax", team: 5, progress: 90,
-    status: "Review", due: "2026-05-28", color: "#059669", bg: "#ecfdf5",
-    hours: "215 hrs", desc: "Complete UI overhaul with new checkout flow and mobile-first design.",
+    id: 3,
+    name: "E-Commerce Redesign",
+    client: "RetailMax",
+    team: 5,
+    progress: 90,
+    status: "Review",
+    due: "28 May 2026",
+    hours: "215 hrs",
+    desc: "Complete UI overhaul with new checkout flow and mobile-first design.",
   },
   {
-    id: 4, name: "DevOps Pipeline", client: "TechStart", team: 2, progress: 30,
-    status: "Active", due: "2026-07-10", color: "#d97706", bg: "#fffbeb",
-    hours: "40 hrs", desc: "CI/CD setup, Docker containerization, and infrastructure automation.",
+    id: 4,
+    name: "DevOps Pipeline",
+    client: "TechStart",
+    team: 2,
+    progress: 30,
+    status: "Paused",
+    due: "10 Jul 2026",
+    hours: "40 hrs",
+    desc: "CI/CD setup, Docker containerization, and infrastructure automation.",
   },
 ];
 
-const statusStyle = {
-  Active: "bg-blue-50 text-blue-700 border border-blue-100",
-  Review: "bg-amber-50 text-amber-700 border border-amber-100",
-  Completed: "bg-emerald-50 text-emerald-700 border border-emerald-100",
-  Paused: "bg-slate-100 text-slate-600",
+const STATUS_STYLES = {
+  Active:    "bg-emerald-50 text-emerald-700 border border-emerald-200",
+  Review:    "bg-blue-50 text-blue-700 border border-blue-200",
+  Completed: "bg-slate-100 text-slate-600 border border-slate-200",
+  Paused:    "bg-amber-50 text-amber-700 border border-amber-200",
 };
 
+// Per-project accent colors for the card left border & icon
+const PROJECT_ACCENTS = [
+  { border: "border-l-blue-500",   iconBg: "bg-blue-50",   iconText: "text-blue-600"   },
+  { border: "border-l-violet-500", iconBg: "bg-violet-50", iconText: "text-violet-600" },
+  { border: "border-l-teal-500",   iconBg: "bg-teal-50",   iconText: "text-teal-600"   },
+  { border: "border-l-orange-500", iconBg: "bg-orange-50", iconText: "text-orange-600" },
+];
+
+function progressColor(p) {
+  if (p >= 80) return "bg-emerald-500";
+  if (p >= 50) return "bg-blue-500";
+  return "bg-amber-500";
+}
+
 function Projects() {
-  const [projects] = useState(initialProjects);
-  const [view, setView] = useState("grid");
+  const [projects]  = useState(initialProjects);
+  const [view, setView]     = useState("grid");
+  const [search, setSearch] = useState("");
+  const [status, setStatus] = useState("");
+
+  const filtered = useMemo(() => {
+    const kw = search.toLowerCase();
+    return projects.filter((p) => {
+      const matchSearch =
+        !kw ||
+        p.name.toLowerCase().includes(kw) ||
+        p.client.toLowerCase().includes(kw) ||
+        p.desc.toLowerCase().includes(kw);
+      const matchStatus = !status || p.status === status;
+      return matchSearch && matchStatus;
+    });
+  }, [projects, search, status]);
+
+  const stats = [
+    { label: "Total Projects", value: projects.length,                                    icon: FiFolder,    iconBg: "bg-slate-100 text-slate-600"       },
+    { label: "Active",         value: projects.filter((p) => p.status === "Active").length, icon: FiTrendingUp, iconBg: "bg-emerald-100 text-emerald-600" },
+    { label: "In Review",      value: projects.filter((p) => p.status === "Review").length, icon: FiClock,      iconBg: "bg-blue-100 text-blue-600"       },
+    { label: "Team Members",   value: projects.reduce((t, p) => t + p.team, 0),            icon: FiUsers,      iconBg: "bg-violet-100 text-violet-600"   },
+  ];
+
+  const hasFilter = search || status;
 
   return (
-    <div style={{ fontFamily: "'DM Sans', sans-serif" }}>
-      <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Syne:wght@700&display=swap');
-        .fade-in { animation: fadeIn 0.4s ease both; }
-        @keyframes fadeIn { from { opacity:0; transform:translateY(10px);} to { opacity:1; transform:none;} }
-        .project-card { transition: transform 0.22s cubic-bezier(.16,1,.3,1), box-shadow 0.22s ease; }
-        .project-card:hover { transform: translateY(-4px); box-shadow: 0 16px 48px rgba(0,0,0,0.08); }
-        .stagger-1{animation-delay:.04s} .stagger-2{animation-delay:.08s} .stagger-3{animation-delay:.12s} .stagger-4{animation-delay:.16s}
-      `}</style>
+    <div className="min-h-screen bg-gray-50 p-6">
+      <div className="mx-auto max-w-7xl space-y-5">
 
-      {/* Header */}
-      <div className="flex items-center justify-between mb-7 fade-in">
-        <div>
-          <h2 className="text-[24px] font-bold text-slate-900 mb-1" style={{ fontFamily: "'Syne', sans-serif" }}>Projects</h2>
-          <p className="text-sm text-slate-500">Overview of all active and ongoing projects</p>
-        </div>
-        <div className="flex items-center gap-2">
-          {/* Grid/List toggle */}
-          <div className="flex bg-slate-100 rounded-xl p-1 gap-1">
-            {[["grid", "⊞"], ["list", "☰"]].map(([v, icon]) => (
-              <button key={v} onClick={() => setView(v)}
-                className={`w-8 h-8 rounded-lg text-sm transition-all ${view === v ? "bg-white shadow-sm text-slate-800" : "text-slate-400 hover:text-slate-600"}`}>
-                {icon}
-              </button>
-            ))}
+        {/* ── Page Header ── */}
+        <div className="flex items-start justify-between">
+          <div>
+            <p className="text-xs font-medium text-gray-400 uppercase tracking-widest mb-1">
+              Project Workspace
+            </p>
+            <h1 className="text-xl font-semibold text-gray-900">Projects Management</h1>
+            <p className="text-sm text-gray-500 mt-0.5">
+              Manage active projects, team allocation, progress and deadlines
+            </p>
           </div>
-          <button className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2.5 rounded-xl text-sm font-semibold transition-colors shadow-sm">
-            <FiPlus size={15} /> New Project
+          <button className="inline-flex items-center gap-2 rounded-lg bg-blue-700 px-4 py-2.5 text-sm font-medium text-white hover:bg-blue-800 transition-colors">
+            <FiPlus size={15} />
+            New Project
           </button>
         </div>
-      </div>
 
-      {/* Summary strip */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6 fade-in" style={{ animationDelay: "0.05s" }}>
-        {[
-          { label: "Total Projects", val: projects.length, icon: FiFolder, color: "#2563eb", bg: "#eff6ff" },
-          { label: "Active", val: projects.filter(p => p.status === "Active").length, icon: FiTrendingUp, color: "#059669", bg: "#ecfdf5" },
-          { label: "In Review", val: projects.filter(p => p.status === "Review").length, icon: FiClock, color: "#d97706", bg: "#fffbeb" },
-          { label: "Team Members", val: projects.reduce((a, p) => a + p.team, 0), icon: FiUsers, color: "#7c3aed", bg: "#f5f3ff" },
-        ].map(s => {
-          const Icon = s.icon;
-          return (
-            <div key={s.label} className="bg-white border border-slate-100 rounded-2xl p-4 shadow-[0_2px_12px_rgba(0,0,0,0.04)]">
-              <div className="w-8 h-8 rounded-xl flex items-center justify-center mb-3" style={{ background: s.bg }}>
-                <Icon size={15} style={{ color: s.color }} />
+        {/* ── Stats ── */}
+        <div className="grid grid-cols-2 gap-4 xl:grid-cols-4">
+          {stats.map(({ label, value, icon: Icon, iconBg }) => (
+            <div key={label} className="bg-white border border-gray-100 rounded-xl p-4 flex items-center gap-3 shadow-sm">
+              <div className={`h-10 w-10 rounded-lg flex items-center justify-center flex-shrink-0 ${iconBg}`}>
+                <Icon size={18} />
               </div>
-              <p className="text-xs text-slate-500">{s.label}</p>
-              <p className="text-xl font-bold text-slate-900 mt-0.5" style={{ fontFamily: "'Syne', sans-serif" }}>{s.val}</p>
-            </div>
-          );
-        })}
-      </div>
-
-      {/* Grid view */}
-      {view === "grid" && (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-          {projects.map((p, i) => (
-            <div key={p.id}
-              className={`project-card fade-in stagger-${i + 1} bg-white border border-slate-100 rounded-2xl p-5 shadow-[0_2px_12px_rgba(0,0,0,0.04)] relative overflow-hidden`}>
-              {/* Top accent bar */}
-              <div className="absolute top-0 left-0 right-0 h-1 rounded-t-2xl" style={{ background: p.color }} />
-
-              <div className="flex items-start justify-between mb-4 mt-1">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: p.bg }}>
-                    <FiFolder size={18} style={{ color: p.color }} />
-                  </div>
-                  <div>
-                    <h3 className="font-bold text-slate-900 text-[15px]" style={{ fontFamily: "'Syne', sans-serif" }}>{p.name}</h3>
-                    <p className="text-xs text-slate-400">{p.client}</p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-2">
-                  <span className={`text-[11px] font-semibold px-2.5 py-1 rounded-full ${statusStyle[p.status]}`}>{p.status}</span>
-                  <button className="text-slate-300 hover:text-slate-600 transition-colors"><FiMoreVertical size={15} /></button>
-                </div>
-              </div>
-
-              <p className="text-xs text-slate-500 leading-5 mb-4">{p.desc}</p>
-
-              {/* Progress */}
-              <div className="mb-4">
-                <div className="flex items-center justify-between mb-1.5">
-                  <span className="text-xs text-slate-500">Progress</span>
-                  <span className="text-xs font-bold text-slate-800">{p.progress}%</span>
-                </div>
-                <div className="h-1.5 bg-slate-100 rounded-full overflow-hidden">
-                  <div className="h-full rounded-full transition-all duration-700"
-                    style={{ width: `${p.progress}%`, background: p.color }} />
-                </div>
-              </div>
-
-              {/* Footer meta */}
-              <div className="flex items-center justify-between text-xs text-slate-400 pt-3 border-t border-slate-100">
-                <div className="flex items-center gap-1"><FiUsers size={12} /> {p.team} members</div>
-                <div className="flex items-center gap-1"><FiClock size={12} /> {p.hours}</div>
-                <div className="flex items-center gap-1">Due {p.due}</div>
+              <div>
+                <p className="text-2xl font-semibold text-gray-900 leading-none">{value}</p>
+                <p className="text-xs text-gray-500 mt-1">{label}</p>
               </div>
             </div>
           ))}
         </div>
-      )}
 
-      {/* List view */}
-      {view === "list" && (
-        <div className="bg-white border border-slate-100 rounded-2xl shadow-[0_2px_12px_rgba(0,0,0,0.04)] overflow-hidden fade-in">
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="border-b border-slate-100">
-                {["Project", "Client", "Team", "Hours", "Progress", "Status", "Due"].map(h => (
-                  <th key={h} className="text-left text-[11px] font-semibold text-slate-400 uppercase tracking-wide px-5 py-3">{h}</th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {projects.map((p, i) => (
-                <tr key={p.id} className={`border-t border-slate-50 hover:bg-slate-50/50 transition-colors fade-in stagger-${i + 1}`}>
-                  <td className="px-5 py-3.5">
-                    <div className="flex items-center gap-2">
-                      <div className="w-2 h-2 rounded-full shrink-0" style={{ background: p.color }} />
-                      <span className="font-semibold text-slate-800">{p.name}</span>
-                    </div>
-                  </td>
-                  <td className="px-5 py-3.5 text-slate-500 text-xs">{p.client}</td>
-                  <td className="px-5 py-3.5 text-slate-500 text-xs">{p.team} people</td>
-                  <td className="px-5 py-3.5 text-slate-600 font-medium">{p.hours}</td>
-                  <td className="px-5 py-3.5 w-32">
-                    <div className="flex items-center gap-2">
-                      <div className="flex-1 h-1.5 bg-slate-100 rounded-full overflow-hidden">
-                        <div className="h-full rounded-full" style={{ width: `${p.progress}%`, background: p.color }} />
-                      </div>
-                      <span className="text-[11px] font-bold text-slate-700 w-8">{p.progress}%</span>
-                    </div>
-                  </td>
-                  <td className="px-5 py-3.5">
-                    <span className={`text-[11px] font-semibold px-2.5 py-1 rounded-full ${statusStyle[p.status]}`}>{p.status}</span>
-                  </td>
-                  <td className="px-5 py-3.5 text-slate-400 text-xs">{p.due}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+        {/* ── Toolbar ── */}
+        <div className="bg-white border border-gray-100 rounded-xl px-4 py-3 shadow-sm flex flex-col gap-3 sm:flex-row sm:items-center">
+          <p className="text-sm font-medium text-gray-700 flex-shrink-0">Project List</p>
+
+          {/* Search */}
+          <div className="relative flex-1">
+            <FiSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={14} />
+            <input
+              type="text"
+              placeholder="Search by name, client or description…"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="w-full rounded-lg border border-gray-200 bg-gray-50 py-2 pl-9 pr-3 text-sm text-gray-700 outline-none focus:border-blue-400 focus:bg-white focus:ring-2 focus:ring-blue-100 transition"
+            />
+          </div>
+
+          {/* Status filter */}
+          <div className="relative sm:w-44">
+            <FiChevronDown className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-gray-400" size={14} />
+            <select
+              value={status}
+              onChange={(e) => setStatus(e.target.value)}
+              className="w-full appearance-none rounded-lg border border-gray-200 bg-gray-50 py-2 pl-3 pr-8 text-sm text-gray-700 outline-none focus:border-blue-400 focus:bg-white focus:ring-2 focus:ring-blue-100 transition"
+            >
+              <option value="">All Status</option>
+              <option>Active</option>
+              <option>Review</option>
+              <option>Completed</option>
+              <option>Paused</option>
+            </select>
+          </div>
+
+          {hasFilter && (
+            <button
+              onClick={() => { setSearch(""); setStatus(""); }}
+              className="text-xs font-medium text-gray-500 hover:text-gray-700 px-3 py-2 rounded-lg border border-gray-200 hover:bg-gray-50 transition whitespace-nowrap"
+            >
+              Clear filters
+            </button>
+          )}
+
+          {/* View toggle */}
+          <div className="flex items-center gap-1 bg-gray-100 rounded-lg p-1 flex-shrink-0">
+            <button
+              onClick={() => setView("grid")}
+              className={`h-7 w-7 flex items-center justify-center rounded-md transition ${
+                view === "grid" ? "bg-white text-gray-900 shadow-sm" : "text-gray-400 hover:text-gray-600"
+              }`}
+            >
+              <FiGrid size={14} />
+            </button>
+            <button
+              onClick={() => setView("list")}
+              className={`h-7 w-7 flex items-center justify-center rounded-md transition ${
+                view === "list" ? "bg-white text-gray-900 shadow-sm" : "text-gray-400 hover:text-gray-600"
+              }`}
+            >
+              <FiList size={14} />
+            </button>
+          </div>
         </div>
-      )}
+
+        {/* ── Grid View ── */}
+        {view === "grid" && filtered.length > 0 && (
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+            {filtered.map((project, idx) => {
+              const accent = PROJECT_ACCENTS[idx % PROJECT_ACCENTS.length];
+              return (
+                <div
+                  key={project.id}
+                  className={`bg-white border border-gray-100 border-l-4 ${accent.border} rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow`}
+                >
+                  {/* Card Header */}
+                  <div className="flex items-start justify-between mb-4">
+                    <div className="flex items-center gap-3">
+                      <div className={`h-10 w-10 rounded-lg flex items-center justify-center flex-shrink-0 ${accent.iconBg} ${accent.iconText}`}>
+                        <FiFolder size={18} />
+                      </div>
+                      <div>
+                        <h3 className="font-semibold text-gray-900 text-sm leading-tight">{project.name}</h3>
+                        <p className="text-xs text-gray-400 mt-0.5">{project.client}</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium ${STATUS_STYLES[project.status]}`}>
+                        {project.status}
+                      </span>
+                      <button className="h-7 w-7 flex items-center justify-center rounded-lg text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition">
+                        <FiMoreVertical size={14} />
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Description */}
+                  <p className="text-xs text-gray-500 leading-5 mb-4 line-clamp-2">{project.desc}</p>
+
+                  {/* Progress */}
+                  <div className="mb-4">
+                    <div className="flex items-center justify-between mb-1.5">
+                      <span className="text-xs text-gray-400">Progress</span>
+                      <span className="text-xs font-semibold text-gray-700">{project.progress}%</span>
+                    </div>
+                    <div className="h-1.5 rounded-full bg-gray-100 overflow-hidden">
+                      <div
+                        className={`h-full rounded-full transition-all ${progressColor(project.progress)}`}
+                        style={{ width: `${project.progress}%` }}
+                      />
+                    </div>
+                  </div>
+
+                  {/* Footer Meta */}
+                  <div className="flex items-center justify-between pt-3 border-t border-gray-100">
+                    <div className="flex items-center gap-4">
+                      <span className="flex items-center gap-1.5 text-xs text-gray-500">
+                        <FiUsers size={12} className="text-gray-400" />
+                        {project.team} members
+                      </span>
+                      <span className="flex items-center gap-1.5 text-xs text-gray-500">
+                        <FiClock size={12} className="text-gray-400" />
+                        {project.hours}
+                      </span>
+                    </div>
+                    <span className="flex items-center gap-1.5 text-xs text-gray-500">
+                      <FiCalendar size={12} className="text-gray-400" />
+                      {project.due}
+                    </span>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
+
+        {/* ── List View ── */}
+        {view === "list" && filtered.length > 0 && (
+          <div className="bg-white border border-gray-100 rounded-xl shadow-sm overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="w-full min-w-[900px] text-sm">
+                <thead>
+                  <tr className="border-b border-gray-100 bg-gray-50">
+                    {["Project", "Client", "Team", "Hours", "Progress", "Status", "Due Date", "Actions"].map((h) => (
+                      <th
+                        key={h}
+                        className={`px-5 py-3 text-xs font-medium uppercase tracking-wider text-gray-400 ${
+                          h === "Actions" ? "text-right" : "text-left"
+                        }`}
+                      >
+                        {h}
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-50">
+                  {filtered.map((project, idx) => {
+                    const accent = PROJECT_ACCENTS[idx % PROJECT_ACCENTS.length];
+                    return (
+                      <tr key={project.id} className="hover:bg-slate-50 transition-colors">
+                        <td className="px-5 py-4">
+                          <div className="flex items-center gap-2.5">
+                            <div className={`h-8 w-8 rounded-lg flex items-center justify-center flex-shrink-0 ${accent.iconBg} ${accent.iconText}`}>
+                              <FiFolder size={14} />
+                            </div>
+                            <div>
+                              <p className="font-medium text-gray-900">{project.name}</p>
+                              <p className="text-xs text-gray-400 mt-0.5 max-w-[200px] truncate">{project.desc}</p>
+                            </div>
+                          </div>
+                        </td>
+                        <td className="px-5 py-4 text-gray-600">{project.client}</td>
+                        <td className="px-5 py-4 text-gray-600">
+                          <span className="flex items-center gap-1.5">
+                            <FiUsers size={13} className="text-gray-400" />
+                            {project.team}
+                          </span>
+                        </td>
+                        <td className="px-5 py-4 font-medium text-gray-900">{project.hours}</td>
+                        <td className="px-5 py-4">
+                          <div className="flex items-center gap-2.5">
+                            <div className="h-1.5 w-20 rounded-full bg-gray-100 overflow-hidden">
+                              <div
+                                className={`h-full rounded-full ${progressColor(project.progress)}`}
+                                style={{ width: `${project.progress}%` }}
+                              />
+                            </div>
+                            <span className="text-xs font-medium text-gray-600">{project.progress}%</span>
+                          </div>
+                        </td>
+                        <td className="px-5 py-4">
+                          <span className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium ${STATUS_STYLES[project.status]}`}>
+                            {project.status}
+                          </span>
+                        </td>
+                        <td className="px-5 py-4">
+                          <span className="flex items-center gap-1.5 text-gray-500 text-xs">
+                            <FiCalendar size={12} className="text-gray-400" />
+                            {project.due}
+                          </span>
+                        </td>
+                        <td className="px-5 py-4">
+                          <div className="flex items-center justify-end gap-1.5">
+                            <button className="h-8 w-8 flex items-center justify-center rounded-lg border border-gray-200 text-gray-400 hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200 transition-colors">
+                              <FiEye size={13} />
+                            </button>
+                            <button className="h-8 w-8 flex items-center justify-center rounded-lg border border-gray-200 text-gray-400 hover:bg-gray-100 hover:text-gray-700 transition-colors">
+                              <FiEdit size={13} />
+                            </button>
+                            <button className="h-8 w-8 flex items-center justify-center rounded-lg border border-gray-200 text-gray-400 hover:bg-red-50 hover:text-red-600 hover:border-red-200 transition-colors">
+                              <FiTrash2 size={13} />
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
+
+        {/* ── Empty State ── */}
+        {filtered.length === 0 && (
+          <div className="bg-white border border-gray-100 rounded-xl shadow-sm px-6 py-16 text-center">
+            <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-xl bg-gray-100">
+              <FiFolder size={22} className="text-gray-400" />
+            </div>
+            <p className="font-medium text-gray-700">No projects found</p>
+            <p className="mt-1 text-xs text-gray-400">Try adjusting your search or status filter.</p>
+            {hasFilter && (
+              <button
+                onClick={() => { setSearch(""); setStatus(""); }}
+                className="mt-3 text-xs font-medium text-blue-600 hover:underline"
+              >
+                Clear filters
+              </button>
+            )}
+          </div>
+        )}
+
+      </div>
     </div>
   );
 }

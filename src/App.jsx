@@ -32,9 +32,9 @@ function App() {
 <Route path="todo/add" element={<AddTodo />} />
         <Route path="projects" element={<Projects />} />
        <Route path="timesheet" element={<Timesheet />} />
-<Route path="timesheet/TimesheetApproval" element={<TimesheetApproval />} />
+<Route path="timesheet/timesheetapproval" element={<TimesheetApproval />} />
 <Route path="timesheet/edit-request" element={<TimesheetEditRequest />} />
-<Route path="timesheet/ClientTimesheet" element={<ClientTimesheet />} />
+<Route path="timesheet/clienttimesheet" element={<ClientTimesheet />} />
         <Route path="rfp" element={<RFP/>} />
         <Route path="qa" element={<Qa/>} />
          <Route path="final-resource" element={<FinalSourceList />} />

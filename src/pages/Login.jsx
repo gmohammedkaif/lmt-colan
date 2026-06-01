@@ -29,7 +29,7 @@ function Login() {
 
   return (
     <div
-      className="min-h-screen flex items-center justify-center px-4 py-8"
+      className="min-h-screen flex items-center justify-center px-4 py-4 flex-col "
       style={{ background: "#f0f4ff", fontFamily: "'Plus Jakarta Sans', sans-serif" }}
     >
       <style>{`
@@ -105,12 +105,12 @@ function Login() {
 
       {/* ════════════ CARD ════════════ */}
       <div
-        className="lc-card w-full bg-white overflow-hidden"
+        className="lc-card  bg-white overflow-hidden lg:grid-cols-2"
         style={{
           maxWidth: 1060,
           borderRadius: 28,
           display: "grid",
-          gridTemplateColumns: "1fr 1fr",
+          // gridTemplateColumns: "1fr 1fr",
           boxShadow: "0 8px 64px rgba(0,0,0,.09), 0 1px 2px rgba(0,0,0,.04)",
         }}
       >
@@ -225,7 +225,7 @@ function Login() {
         </div>
 
         {/* ══════ RIGHT PANEL ══════ */}
-        <div className="flex items-center justify-center" style={{ padding: "52px 48px" }}>
+        <div className="flex  items-center justify-center" style={{ padding: "52px 48px" }}>
           <form onSubmit={handleLogin} className="w-full" style={{ maxWidth: 400 }}>
 
             {/* Mobile logo */}
@@ -341,7 +341,7 @@ function Login() {
       </div>
 
       {/* Footer note */}
-      <p style={{ position: "fixed", bottom: 18, left: 0, right: 0, textAlign: "center", fontSize: 12, color: "#94a3b8" }}>
+      <p style={{ marginTop :"20px" ,right: 0, textAlign: "center", fontSize: 12, color: "#94a3b8" }}>
         © 2026 Colan Infotech. All rights reserved.
       </p>
     </div>

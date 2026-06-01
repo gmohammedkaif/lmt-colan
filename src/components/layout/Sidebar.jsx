@@ -20,7 +20,7 @@ const menuItems = [
   { name: "Project",        path: "/dashboard/projects",           icon: FiFolder,      accent: "#16a34a" },
   { name: "View Timesheet", path: "/dashboard/timesheet",          icon: FiClock,       accent: "#dc2626" },
   { name: "QA",             path: "/dashboard/qa",                 icon: FiShield,      accent: "#9333ea" },
-  { name: "Final source List",   path: "/dashboard/final-resource",     icon: FiUsers,       accent: "#0284c7" },
+  { name: "Final source List",   path: "/dashboard/final-resource",icon: FiUsers,       accent: "#0284c7" },
 ];
 
 function Sidebar() {

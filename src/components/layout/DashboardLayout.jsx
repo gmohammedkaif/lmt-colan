@@ -18,9 +18,9 @@ const subNavItems = {
 
   timesheet: [
     { name: "View Timesheet", path: "/dashboard/timesheet" },
-    { name: "Timesheet Approval", path: "/dashboard/timesheet/approval" },
+    { name: "Timesheet Approval", path: "/dashboard/timesheet/timesheetapproval" },
     { name: "Timesheet Edit Request", path: "/dashboard/timesheet/edit-request" },
-    { name: "Client Timesheet Approval", path: "/dashboard/timesheet/ClientTimesheet" },
+    { name: "Client Timesheet Approval", path: "/dashboard/timesheet/clienttimesheet" },
   ],
   "final-resource": [
     { name: "Final Source List", path: "/dashboard/final-resource" },
