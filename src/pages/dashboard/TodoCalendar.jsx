@@ -1,70 +1,80 @@
+// ===============================
+// TODO CALENDAR PAGE
+// ===============================
+
 const calendarTodos = [
-  { date: "21", title: "Sprint planning", status: "Active" },
-  { date: "22", title: "Submit timesheet", status: "Done" },
-  { date: "24", title: "Project review", status: "Active" },
+  { day: 4, title: "Sprint Planning", status: "Active" },
+  { day: 9, title: "Submit Timesheet", status: "Done" },
+  { day: 18, title: "Client Meeting", status: "Active" },
+  { day: 24, title: "Project Review", status: "Active" },
 ];
 
 function TodoCalendar() {
   const days = Array.from({ length: 31 }, (_, i) => i + 1);
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-6">
+      {/* HEADER */}
       <div>
-        <h1 className="text-2xl font-bold text-slate-900">To-Do Calendar</h1>
+        <h1 className="text-3xl font-bold text-slate-900">
+          To-Do Calendar
+        </h1>
+
         <p className="text-sm text-slate-500 mt-1">
-          View your reminders and tasks by calendar date.
+          Monthly reminder and task schedule overview.
         </p>
       </div>
 
-      <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-5">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-5">
+      {/* CALENDAR */}
+      <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-6">
+        <div className="flex items-center justify-between mb-6">
           <div>
-            <h2 className="text-lg font-bold text-slate-900">May 2026</h2>
-            <p className="text-xs text-slate-400 mt-1">Monthly task overview</p>
+            <h2 className="text-xl font-bold text-slate-900">
+              May 2026
+            </h2>
+
+            <p className="text-sm text-slate-400 mt-1">
+              Employee task calendar
+            </p>
           </div>
 
-          <div className="flex gap-2">
-            <button className="px-4 py-2 rounded-xl bg-slate-100 text-sm font-semibold text-slate-600">
-              Prev
-            </button>
-            <button className="px-4 py-2 rounded-xl bg-blue-600 text-white text-sm font-semibold">
-              Today
-            </button>
-            <button className="px-4 py-2 rounded-xl bg-slate-100 text-sm font-semibold text-slate-600">
-              Next
-            </button>
-          </div>
+          <button className="px-5 py-2.5 rounded-xl bg-blue-600 text-white text-sm font-semibold">
+            Today
+          </button>
         </div>
 
-        <div className="grid grid-cols-7 gap-2 mb-2">
-          {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day) => (
-            <div
-              key={day}
-              className="text-center text-xs font-bold text-slate-400 uppercase"
-            >
-              {day}
-            </div>
-          ))}
+        {/* DAYS */}
+        <div className="grid grid-cols-7 gap-3 mb-3">
+          {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map(
+            (day) => (
+              <div
+                key={day}
+                className="text-center text-xs font-bold text-slate-400 uppercase"
+              >
+                {day}
+              </div>
+            )
+          )}
         </div>
 
-        <div className="grid grid-cols-7 gap-2">
+        {/* DATES */}
+        <div className="grid grid-cols-7 gap-3">
           {days.map((day) => {
             const task = calendarTodos.find(
-              (item) => item.date === String(day)
+              (item) => item.day === day
             );
 
             return (
               <div
                 key={day}
-                className={`min-h-[78px] rounded-xl border p-2 transition
-                ${
+                className={`min-h-[90px] rounded-2xl border p-3 transition ${
                   task
                     ? "bg-blue-50 border-blue-100"
                     : "bg-slate-50 border-slate-100 hover:bg-slate-100"
                 }`}
               >
-                <div className="flex items-center justify-between">
-                  <span className="text-xs font-bold text-slate-700">
+                <div className="flex justify-between items-center">
+                  <span className="text-sm font-bold text-slate-700">
                     {day}
                   </span>
 
@@ -74,15 +84,16 @@ function TodoCalendar() {
                 </div>
 
                 {task && (
-                  <div className="mt-3">
-                    <p className="text-[11px] font-semibold text-slate-800 leading-tight line-clamp-2">
+                  <div className="mt-4">
+                    <p className="text-xs font-semibold text-slate-800 line-clamp-2">
                       {task.title}
                     </p>
+
                     <span
-                      className={`inline-block mt-2 px-2 py-0.5 rounded-full text-[10px] font-bold ${
+                      className={`inline-block mt-2 px-2 py-1 rounded-full text-[10px] font-bold ${
                         task.status === "Done"
-                          ? "bg-green-100 text-green-700"
-                          : "bg-blue-100 text-blue-700"
+                          ? "bg-green-100 text-green-600"
+                          : "bg-blue-100 text-blue-600"
                       }`}
                     >
                       {task.status}
