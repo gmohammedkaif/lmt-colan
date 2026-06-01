@@ -17,6 +17,7 @@ import TaskCalendar from "./pages/dashboard/TaskCalendar";
 import TimesheetEditRequest from "./pages/dashboard/TimesheetEditRequest";
 import ClientTimesheet from "./pages/dashboard/ClientTimesheet";
 import TimesheetApproval from "./pages/dashboard/TimesheetApproval";
+import ProjectDetails from "./pages/dashboard/ProjectDetails";
 
 function App() {
   return (
@@ -31,6 +32,10 @@ function App() {
 <Route path="todo/calendar" element={<TodoCalendar />} />
 <Route path="todo/add" element={<AddTodo />} />
         <Route path="projects" element={<Projects />} />
+       <Route
+  path="projects/:id"
+  element={<ProjectDetails />}
+/>
        <Route path="timesheet" element={<Timesheet />} />
 <Route path="timesheet/timesheetapproval" element={<TimesheetApproval />} />
 <Route path="timesheet/edit-request" element={<TimesheetEditRequest />} />

@@ -38,258 +38,326 @@ function Sidebar() {
   };
 
   return (
-    <aside className="w-[230px] min-h-screen flex flex-col hidden lg:flex" style={{ background: "#ffffff", borderRight: "1px solid #e5e7eb" }}>
-      <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+   <aside
+  className="ci-sidebar hidden lg:flex"
+  style={{
+    width: "240px",
+    height: "100vh",
+    background: "#FFFFFF",
+    borderRight: "1px solid #F1F5F9",
+    flexDirection: "column",
+    flexShrink: 0,
+  }}
+>
+  <style>{`
+    @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap');
 
-        .colan-sidebar * { font-family: 'Plus Jakarta Sans', sans-serif; }
+    .ci-sidebar * {
+      font-family: 'DM Sans', sans-serif;
+      box-sizing: border-box;
+    }
 
-        .colan-logo-ring {
-          position: relative;
-          width: 38px; height: 38px;
-          border-radius: 12px;
-          overflow: hidden;
-        }
-        .colan-logo-ring img {
-          width: 100%; height: 100%;
-          object-fit: contain;
-        }
+    .ci-sidebar-scroll {
+      flex: 1;
+      overflow-y: auto;
+      overflow-x: hidden;
+      padding: 0 14px;
+    }
 
-        /* Nav item */
-        .colan-nav-item {
-          display: flex;
-          align-items: center;
-          gap: 10px;
-          padding: 8px 10px;
-          border-radius: 10px;
-          text-decoration: none;
-          color: #64748b;
-          font-size: 13px;
-          font-weight: 500;
-          transition: background 0.15s, color 0.15s;
-          position: relative;
-          cursor: pointer;
-        }
-        .colan-nav-item:hover {
-          background: #f1f5f9;
-          color: #1e293b;
-        }
-        .colan-nav-item:hover .colan-icon-wrap {
-          transform: scale(1.08);
-        }
-        .colan-nav-item.active {
-          background: #eff6ff;
-          color: #1d4ed8;
-          font-weight: 600;
-        }
-        .colan-nav-item.active .colan-active-bar {
-          opacity: 1;
-        }
+    .ci-sidebar-scroll::-webkit-scrollbar {
+      width: 6px;
+    }
 
-        .colan-icon-wrap {
-          width: 30px; height: 30px;
-          border-radius: 8px;
-          display: flex; align-items: center; justify-content: center;
-          transition: transform 0.15s;
-          flex-shrink: 0;
-        }
+    .ci-sidebar-scroll::-webkit-scrollbar-thumb {
+      background: transparent;
+      border-radius: 999px;
+    }
 
-        .colan-active-bar {
-          position: absolute;
-          left: 0; top: 50%;
-          transform: translateY(-50%);
-          width: 3px; height: 60%;
-          border-radius: 0 3px 3px 0;
-          background: #2563eb;
-          opacity: 0;
-          transition: opacity 0.15s;
-        }
+    .ci-sidebar-scroll:hover::-webkit-scrollbar-thumb {
+      background: #E2E8F0;
+    }
 
-        .colan-section-label {
-          font-size: 10px;
-          font-weight: 700;
-          letter-spacing: 0.1em;
-          text-transform: uppercase;
-          color: #94a3b8;
-          padding: 0 10px;
-          margin-bottom: 4px;
-          margin-top: 8px;
-        }
+    /* LOGO */
+    .ci-sidebar-logo {
+      height: 68px;
+      padding: 0 18px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      border-bottom: 1px solid #F8FAFC;
+      flex-shrink: 0;
+    }
 
-        .colan-divider {
-          height: 1px;
-          background: #f1f5f9;
-          margin: 8px 0;
-        }
+    .ci-sidebar-logo img {
+      width: 34px;
+      height: 34px;
+      object-fit: contain;
+      flex-shrink: 0;
+    }
 
-        /* ── Profile Card Styles ── */
-        .colan-profile-card {
-          background: linear-gradient(145deg, #f8fafc, #f1f5f9);
-          border: 1px solid #e2e8f0;
-          border-radius: 16px;
-          padding: 14px;
-          margin-top: 12px;
-          position: relative;
-          overflow: hidden;
-        }
-        .colan-profile-card::before {
-          content: '';
-          position: absolute;
-          top: -20px; right: -20px;
-          width: 60px; height: 60px;
-          background: radial-gradient(circle, rgba(37,99,235,0.08) 0%, transparent 70%);
-          border-radius: 50%;
-        }
+    .ci-sidebar-brand {
+      min-width: 0;
+    }
 
-        .colan-avatar {
-          width: 38px; height: 38px;
-          border-radius: 10px;
-          background: linear-gradient(135deg, #2563eb 0%, #4f46e5 100%);
-          display: flex; align-items: center; justify-content: center;
-          color: #fff; font-size: 13px; font-weight: 700;
-          box-shadow: 0 4px 12px rgba(37,99,235,0.25);
-          position: relative;
-        }
+    .ci-sidebar-brand h2 {
+      font-size: 13px;
+      font-weight: 700;
+      color: #0F172A;
+      line-height: 1.2;
+      letter-spacing: 0.04em;
+    }
 
-        .colan-status-dot {
-          position: absolute;
-          bottom: -1px; right: -1px;
-          width: 10px; height: 10px;
-          background: #10b981;
-          border-radius: 50%;
-          border: 2px solid #f1f5f9;
-        }
+    .ci-sidebar-brand p {
+      font-size: 10px;
+      color: #94A3B8;
+      margin-top: 2px;
+      letter-spacing: 0.08em;
+    }
 
-        .colan-logout-btn {
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          gap: 6px;
-          width: 100%;
-          padding: 8px;
-          margin-top: 12px;
-          borderRadius: 10px;
-          border: 1.5px solid #e2e8f0;
-          background: #ffffff;
-          color: #64748b;
-          font-size: 12px;
-          font-weight: 600;
-          cursor: pointer;
-          transition: all 0.2s ease;
-          font-family: 'Plus Jakarta Sans', sans-serif;
-        }
-        .colan-logout-btn:hover {
-          background: #fef2f2;
-          border-color: #fecaca;
-          color: #ef4444;
-          transform: translateY(-1px);
-          box-shadow: 0 4px 12px rgba(239, 68, 68, 0.1);
-        }
-        .colan-logout-btn:hover .logout-icon {
-          transform: translateX(-2px);
-        }
-        .logout-icon {
-          transition: transform 0.2s ease;
-        }
-      `}</style>
+    /* SECTION LABEL */
+    .ci-sidebar-label {
+      font-size: 10px;
+      font-weight: 700;
+      color: #94A3B8;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin: 20px 10px 10px;
+    }
 
-      <div className="colan-sidebar flex flex-col h-full px-3 py-5">
+    /* NAV ITEM */
+    .ci-nav-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
 
-        {/* ── Logo (Unchanged) ── */}
-        <div className="flex items-center gap-3 px-2 mb-6">
-          <div className="colan-logo-ring">
-            <img src={colanlogo} alt="Colan Logo" />
-          </div>
-          <div>
-            <p style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 800, fontSize: 14, color: "#0f172a", lineHeight: 1.2 }}>
-              COLAN
-            </p>
-            <p style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 600, fontSize: 9, color: "#2563eb", letterSpacing: "0.18em" }}>
-              INFOTECH
-            </p>
-          </div>
-        </div>
+      height: 42px;
 
-        <div className="colan-divider" />
+      padding: 0 12px;
 
-        {/* ── Navigation (Unchanged) ── */}
-        <div className="mt-2 flex-1 overflow-y-auto">
-          <p className="colan-section-label">Navigation</p>
-          <nav style={{ display: "flex", flexDirection: "column", gap: 2 }}>
-            {menuItems.map((item) => {
-              const Icon = item.icon;
-              return (
-                <NavLink
-                  key={item.name}
-                  to={item.path}
-                  end={item.path === "/dashboard"}
-                  className={({ isActive }) =>
-                    `colan-nav-item${isActive ? " active" : ""}`
-                  }
-                >
-                  {({ isActive }) => (
-                    <>
-                      <span className="colan-active-bar" />
-                      <span
-                        className="colan-icon-wrap"
-                        style={{
-                          background: isActive
-                            ? `${item.accent}18`
-                            : "#f8fafc",
-                        }}
-                      >
-                        <Icon
-                          size={14}
-                          style={{ color: isActive ? item.accent : "#94a3b8" }}
-                        />
-                      </span>
-                      <span>{item.name}</span>
-                      {isActive && (
-                        <span style={{
-                          marginLeft: "auto",
-                          width: 6, height: 6,
-                          borderRadius: "50%",
-                          background: item.accent,
-                          flexShrink: 0,
-                        }} />
-                      )}
-                    </>
-                  )}
-                </NavLink>
-              );
-            })}
-          </nav>
-        </div>
+      border-radius: 12px;
 
-        {/* ══════════ NEW BOTTOM PROFILE SECTION ══════════ */}
-        <div className="mt-auto">
-          <div className="colan-divider" />
-          
-          <div className="colan-profile-card">
-            <div style={{ display: "flex", alignItems: "center", gap: 10, position: "relative", zIndex: 1 }}>
-              <div className="colan-avatar">
-                {initials}
-                <span className="colan-status-dot" />
-              </div>
-              <div style={{ flex: 1, overflow: "hidden" }}>
-                <p style={{ fontSize: 13, fontWeight: 700, color: "#0f172a", lineHeight: 1.3, textTransform: "capitalize", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
-                  {name}
-                </p>
-                <p style={{ fontSize: 10.5, color: "#94a3b8", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
-                  {email}
-                </p>
-              </div>
-            </div>
-            
-            <button className="colan-logout-btn" onClick={handleLogout}>
-              <FiLogOut size={13} className="logout-icon" />
-              Sign Out
-            </button>
-          </div>
-        </div>
+      text-decoration: none;
 
+      color: #64748B;
+
+      font-size: 13px;
+      font-weight: 500;
+
+      transition:
+        background 0.15s ease,
+        color 0.15s ease;
+    }
+
+    .ci-nav-item:hover {
+      background: #F8FAFC;
+      color: #0F172A;
+    }
+
+    .ci-nav-item.active {
+      background: #EFF6FF;
+      color: #1D4ED8;
+      font-weight: 600;
+    }
+
+    .ci-nav-icon {
+      width: 28px;
+      height: 28px;
+
+      border-radius: 8px;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      flex-shrink: 0;
+
+      background: #F8FAFC;
+
+      transition: background 0.15s ease;
+    }
+
+    .ci-nav-item.active .ci-nav-icon {
+      background: rgba(37,99,235,0.12);
+    }
+
+    /* PROFILE */
+    .ci-sidebar-profile {
+      height: 74px;
+
+      border-top: 1px solid #F8FAFC;
+
+      padding: 0 16px;
+
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+
+      flex-shrink: 0;
+    }
+
+    .ci-profile-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+
+      min-width: 0;
+    }
+
+    .ci-avatar {
+      width: 36px;
+      height: 36px;
+
+      border-radius: 10px;
+
+      background: #DBEAFE;
+
+      color: #1D4ED8;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      font-size: 13px;
+      font-weight: 700;
+
+      flex-shrink: 0;
+    }
+
+    .ci-profile-info {
+      min-width: 0;
+    }
+
+    .ci-profile-info h4 {
+      font-size: 12px;
+      font-weight: 700;
+      color: #0F172A;
+      line-height: 1.2;
+
+      text-transform: capitalize;
+
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .ci-profile-info p {
+      font-size: 10px;
+      color: #94A3B8;
+
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* LOGOUT BUTTON */
+    .ci-logout-btn {
+      width: 34px;
+      height: 34px;
+
+      border-radius: 10px;
+
+      border: none;
+
+      background: transparent;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      cursor: pointer;
+
+      transition:
+        background 0.15s ease,
+        color 0.15s ease;
+    }
+
+    .ci-logout-btn:hover {
+      background: #FEF2F2;
+      color: #DC2626;
+    }
+  `}</style>
+
+  {/* LOGO */}
+  <div className="ci-sidebar-logo">
+    <img src={colanlogo} alt="logo" />
+
+    <div className="ci-sidebar-brand">
+      <h2>COLAN INFOTECH</h2>
+      <p>Workspace Portal</p>
+    </div>
+  </div>
+
+  {/* NAVIGATION */}
+  <div className="ci-sidebar-scroll">
+    <div className="ci-sidebar-label">
+      Navigation
+    </div>
+
+    <nav
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        gap: "4px",
+      }}
+    >
+      {menuItems.map((item) => {
+        const Icon = item.icon;
+
+        return (
+          <NavLink
+            key={item.name}
+            to={item.path}
+            end={item.path === "/dashboard"}
+            className={({ isActive }) =>
+              `ci-nav-item${isActive ? " active" : ""}`
+            }
+          >
+            {({ isActive }) => (
+              <>
+                <span className="ci-nav-icon">
+                  <Icon
+                    size={15}
+                    color={
+                      isActive
+                        ? item.accent
+                        : "#94A3B8"
+                    }
+                  />
+                </span>
+
+                <span>{item.name}</span>
+              </>
+            )}
+          </NavLink>
+        );
+      })}
+    </nav>
+  </div>
+
+  {/* PROFILE */}
+  <div className="ci-sidebar-profile">
+    <div className="ci-profile-left">
+      <div className="ci-avatar">
+        {initials}
       </div>
-    </aside>
+
+      <div className="ci-profile-info">
+        <h4>{name}</h4>
+        <p>{email}</p>
+      </div>
+    </div>
+
+    <button
+      className="ci-logout-btn"
+      onClick={handleLogout}
+    >
+      <FiLogOut
+        size={16}
+        color="#64748B"
+      />
+    </button>
+  </div>
+</aside>
   );
 }
 

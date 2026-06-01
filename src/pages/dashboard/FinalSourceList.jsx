@@ -1,9 +1,16 @@
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import {
-  FiSearch, FiPlus, FiEye, FiDownload, FiFileText,
-  FiFolder, FiCheckCircle, FiClock, FiUploadCloud, FiChevronDown,
+  FiSearch,
+  FiPlus,
+  FiEye,
+  FiDownload,
+  FiFileText,
+  FiGitBranch,
+  FiUploadCloud,
+  FiClock,
+  FiCheckCircle,
+  FiX,
 } from "react-icons/fi";
-import { useNavigate } from "react-router-dom";
 
 const sources = [
   {
@@ -15,6 +22,8 @@ const sources = [
     uploadedOn: "21 May 2026",
     version: "v1.0",
     status: "Active",
+    description:
+      "Production-ready repository with frontend and backend modules.",
   },
   {
     id: "FS-002",
@@ -25,6 +34,8 @@ const sources = [
     uploadedOn: "18 May 2026",
     version: "v2.1",
     status: "Review",
+    description:
+      "Source package uploaded for client review and deployment validation.",
   },
 ];
 
@@ -42,215 +53,489 @@ const SOURCE_TYPE_ICON = {
 };
 
 function FinalSourceList() {
-  const navigate = useNavigate();
   const [search, setSearch] = useState("");
-  const [statusFilter, setStatusFilter] = useState("");
+  const [openModal, setOpenModal] = useState(false);
+  const [selectedSource, setSelectedSource] = useState(null);
 
-  const filtered = useMemo(() => {
-    const kw = search.toLowerCase();
-    return sources.filter((item) => {
-      const matchSearch =
-        !kw ||
-        item.title.toLowerCase().includes(kw) ||
-        item.projectCode.toLowerCase().includes(kw) ||
-        item.uploadedBy.toLowerCase().includes(kw);
-      const matchStatus = !statusFilter || item.status === statusFilter;
-      return matchSearch && matchStatus;
-    });
-  }, [search, statusFilter]);
+  const filteredSources = sources.filter(
+    (item) =>
+      item.title.toLowerCase().includes(search.toLowerCase()) ||
+      item.projectCode.toLowerCase().includes(search.toLowerCase())
+  );
 
   const stats = [
-    { label: "Total Sources", value: sources.length,                                        icon: FiFolder,      iconBg: "bg-slate-100 text-slate-600"       },
-    { label: "Active",        value: sources.filter((s) => s.status === "Active").length,   icon: FiCheckCircle, iconBg: "bg-emerald-100 text-emerald-600"   },
-    { label: "Under Review",  value: sources.filter((s) => s.status === "Review").length,   icon: FiClock,       iconBg: "bg-amber-100 text-amber-600"       },
-    { label: "Total Uploads", value: 12,                                                     icon: FiUploadCloud, iconBg: "bg-violet-100 text-violet-600"     },
+    {
+      title: "Total Sources",
+      value: "2",
+      icon: FiGitBranch,
+      color: "blue",
+    },
+    {
+      title: "Active",
+      value: "1",
+      icon: FiCheckCircle,
+      color: "green",
+    },
+    {
+      title: "Under Review",
+      value: "1",
+      icon: FiClock,
+      color: "orange",
+    },
   ];
 
-  const hasFilter = search || statusFilter;
-
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
-      <div className="mx-auto max-w-7xl space-y-5">
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+        <div>
+          <h1 className="text-3xl font-bold text-slate-900">
+            Final Source
+          </h1>
 
-        {/* ── Page Header ── */}
-        <div className="flex items-start justify-between">
-          <div>
-            <p className="text-xs font-medium text-gray-400 uppercase tracking-widest mb-1">
-              Delivery Management
-            </p>
-            <h1 className="text-xl font-semibold text-gray-900">Final Source Management</h1>
-            <p className="text-sm text-gray-500 mt-0.5">
-              Manage final project source files, versions and delivery tracking
-            </p>
-          </div>
-          <button
-            onClick={() => navigate("/dashboard/final-resource/add")}
-            className="inline-flex items-center gap-2 rounded-lg bg-blue-700 px-4 py-2.5 text-sm font-medium text-white hover:bg-blue-800 transition-colors"
-          >
-            <FiPlus size={15} />
-            Add Final Source
-          </button>
+          <p className="text-sm text-slate-500 mt-1">
+            Manage final project source files, versions and delivery records.
+          </p>
         </div>
 
-        {/* ── Stats ── */}
-        <div className="grid grid-cols-2 gap-4 xl:grid-cols-4">
-          {stats.map(({ label, value, icon: Icon, iconBg }) => (
-            <div key={label} className="bg-white border border-gray-100 rounded-xl p-4 flex items-center gap-3 shadow-sm">
-              <div className={`h-10 w-10 rounded-lg flex items-center justify-center flex-shrink-0 ${iconBg}`}>
-                <Icon size={18} />
-              </div>
-              <div>
-                <p className="text-2xl font-semibold text-gray-900 leading-none">{value}</p>
-                <p className="text-xs text-gray-500 mt-1">{label}</p>
+        <button
+          onClick={() => setOpenModal(true)}
+          className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 transition text-white px-5 py-3 rounded-2xl text-sm font-semibold shadow-sm"
+        >
+          <FiPlus />
+          Add Final Source
+        </button>
+      </div>
+
+      {/* Stats */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        {stats.map((item) => {
+          const Icon = item.icon;
+
+          return (
+            <div
+              key={item.title}
+              className="bg-white rounded-2xl p-5 border border-slate-100 shadow-sm"
+            >
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-slate-500">
+                    {item.title}
+                  </p>
+
+                  <h2 className="text-3xl font-bold text-slate-900 mt-2">
+                    {item.value}
+                  </h2>
+                </div>
+
+                <div
+                  className={`w-14 h-14 rounded-2xl flex items-center justify-center
+                  ${
+                    item.color === "blue"
+                      ? "bg-blue-50 text-blue-600"
+                      : item.color === "green"
+                      ? "bg-green-50 text-green-600"
+                      : "bg-orange-50 text-orange-600"
+                  }`}
+                >
+                  <Icon size={22} />
+                </div>
               </div>
             </div>
-          ))}
+          );
+        })}
+      </div>
+
+      {/* Search */}
+      <div className="bg-white rounded-2xl p-5 border border-slate-100 shadow-sm">
+        <div className="relative">
+          <FiSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
+
+          <input
+            type="text"
+            placeholder="Search by project title or project code..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="w-full pl-11 pr-4 py-3 rounded-2xl border border-slate-200 text-sm outline-none focus:ring-4 focus:ring-blue-100 focus:border-blue-500"
+          />
         </div>
 
-        {/* ── Toolbar ── */}
-        <div className="bg-white border border-gray-100 rounded-xl px-4 py-3 shadow-sm flex flex-col gap-3 sm:flex-row sm:items-center">
-          <p className="text-sm font-medium text-gray-700 flex-shrink-0">Source List</p>
+      {/* Table */}
+      <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+        <div className="overflow-x-auto">
+          <table className="w-full min-w-[1000px]">
+            <thead className="bg-slate-50 border-b border-slate-100">
+              <tr>
+                <th className="text-left px-5 py-4 text-xs font-bold uppercase text-slate-500">
+                  Project
+                </th>
 
-          <div className="relative flex-1">
-            <FiSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={14} />
-            <input
-              type="text"
-              placeholder="Search by project title, code or uploaded by…"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="w-full rounded-lg border border-gray-200 bg-gray-50 py-2 pl-9 pr-3 text-sm text-gray-700 outline-none focus:border-blue-400 focus:bg-white focus:ring-2 focus:ring-blue-100 transition"
-            />
-          </div>
+                <th className="text-left px-5 py-4 text-xs font-bold uppercase text-slate-500">
+                  Source Type
+                </th>
 
-          <div className="relative sm:w-44">
-            <FiChevronDown className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-gray-400" size={14} />
-            <select
-              value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value)}
-              className="w-full appearance-none rounded-lg border border-gray-200 bg-gray-50 py-2 pl-3 pr-8 text-sm text-gray-700 outline-none focus:border-blue-400 focus:bg-white focus:ring-2 focus:ring-blue-100 transition"
-            >
-              <option value="">All Status</option>
-              <option>Active</option>
-              <option>Review</option>
-              <option>Archived</option>
-            </select>
-          </div>
+                <th className="text-left px-5 py-4 text-xs font-bold uppercase text-slate-500">
+                  Upload On
+                </th>
 
-          {hasFilter && (
-            <button
-              onClick={() => { setSearch(""); setStatusFilter(""); }}
-              className="text-xs font-medium text-gray-500 hover:text-gray-700 px-3 py-2 rounded-lg border border-gray-200 hover:bg-gray-50 transition whitespace-nowrap"
-            >
-              Clear filters
-            </button>
-          )}
-        </div>
+                <th className="text-left px-5 py-4 text-xs font-bold uppercase text-slate-500">
+                  Upload By
+                </th>
 
-        {/* ── Table ── */}
-        <div className="bg-white border border-gray-100 rounded-xl shadow-sm overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="w-full min-w-[960px] text-sm">
-              <thead>
-                <tr className="border-b border-gray-100 bg-gray-50">
-                  {["Project", "Source Type", "Uploaded On", "Uploaded By", "Version", "Status", "Actions"].map((h) => (
-                    <th
-                      key={h}
-                      className={`px-5 py-3 text-xs font-medium uppercase tracking-wider text-gray-400 ${
-                        h === "Actions" ? "text-right" : "text-left"
+                <th className="text-left px-5 py-4 text-xs font-bold uppercase text-slate-500">
+                  Version
+                </th>
+
+                <th className="text-left px-5 py-4 text-xs font-bold uppercase text-slate-500">
+                  Status
+                </th>
+
+                <th className="text-right px-5 py-4 text-xs font-bold uppercase text-slate-500">
+                  Action
+                </th>
+              </tr>
+            </thead>
+
+            <tbody>
+              {filteredSources.map((item) => (
+                <tr
+                  key={item.id}
+                  className="border-b border-slate-100 hover:bg-slate-50 transition"
+                >
+                  {/* Project */}
+                  <td className="px-5 py-5">
+                    <p className="font-semibold text-slate-900">
+                      {item.title}
+                    </p>
+
+                    <p className="text-xs text-slate-500 mt-1">
+                      {item.projectCode}
+                    </p>
+                  </td>
+
+                  {/* Source Type */}
+                  <td className="px-5 py-5 text-sm text-slate-700">
+                    {item.sourceType}
+                  </td>
+
+                  {/* Upload On */}
+                  <td className="px-5 py-5 text-sm text-slate-700">
+                    {item.uploadedOn}
+                  </td>
+
+                  {/* Upload By */}
+                  <td className="px-5 py-5 text-sm text-slate-700">
+                    {item.uploadedBy}
+                  </td>
+
+                  {/* Version */}
+                  <td className="px-5 py-5">
+                    <span className="font-semibold text-slate-900">
+                      {item.version}
+                    </span>
+                  </td>
+
+                  {/* Status */}
+                  <td className="px-5 py-5">
+                    <span
+                      className={`px-3 py-1 rounded-full text-xs font-semibold
+                      ${
+                        item.status === "Active"
+                          ? "bg-green-50 text-green-700"
+                          : "bg-orange-50 text-orange-700"
                       }`}
                     >
-                      {h}
-                    </th>
-                  ))}
+                      {item.status}
+                    </span>
+                  </td>
+
+                  {/* Actions */}
+                  <td className="px-5 py-5">
+                    <div className="flex justify-end gap-2">
+                      <button
+                        onClick={() => setSelectedSource(item)}
+                        className="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center hover:bg-blue-100 transition"
+                      >
+                        <FiEye />
+                      </button>
+
+                      <button className="w-10 h-10 rounded-xl bg-green-50 text-green-600 flex items-center justify-center hover:bg-green-100 transition">
+                        <FiDownload />
+                      </button>
+
+                      <button className="w-10 h-10 rounded-xl bg-slate-100 text-slate-600 flex items-center justify-center hover:bg-slate-200 transition">
+                        <FiFileText />
+                      </button>
+                    </div>
+                  </td>
                 </tr>
-              </thead>
+              ))}
 
-              <tbody className="divide-y divide-gray-50">
-                {filtered.map((item) => (
-                  <tr key={item.id} className="hover:bg-slate-50 transition-colors">
-
-                    {/* Project */}
-                    <td className="px-5 py-4">
-                      <p className="font-medium text-gray-900">{item.title}</p>
-                      <p className="mt-0.5 text-xs text-gray-400">{item.projectCode}</p>
-                    </td>
-
-                    {/* Source Type */}
-                    <td className="px-5 py-4">
-                      <span className={`inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1 text-xs font-medium ${SOURCE_TYPE_ICON[item.sourceType] || "bg-gray-100 text-gray-600"}`}>
-                        <FiFolder size={12} />
-                        {item.sourceType}
-                      </span>
-                    </td>
-
-                    {/* Uploaded On */}
-                    <td className="px-5 py-4 text-gray-500 text-xs">{item.uploadedOn}</td>
-
-                    {/* Uploaded By */}
-                    <td className="px-5 py-4">
-                      <div className="flex items-center gap-2">
-                        <div className="h-7 w-7 rounded-full bg-violet-100 text-violet-700 flex items-center justify-center text-xs font-semibold flex-shrink-0">
-                          {item.uploadedBy.slice(0, 2).toUpperCase()}
-                        </div>
-                        <span className="text-gray-700 font-medium text-sm">{item.uploadedBy}</span>
-                      </div>
-                    </td>
-
-                    {/* Version */}
-                    <td className="px-5 py-4">
-                      <span className="inline-flex rounded-md bg-violet-50 border border-violet-100 px-2.5 py-0.5 text-xs font-semibold text-violet-700">
-                        {item.version}
-                      </span>
-                    </td>
-
-                    {/* Status */}
-                    <td className="px-5 py-4">
-                      <span className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium ${STATUS_STYLES[item.status] || "bg-gray-100 text-gray-600 border border-gray-200"}`}>
-                        {item.status}
-                      </span>
-                    </td>
-
-                    {/* Actions */}
-                    <td className="px-5 py-4">
-                      <div className="flex items-center justify-end gap-1.5">
-                        <button title="View" className="h-8 w-8 flex items-center justify-center rounded-lg border border-gray-200 text-gray-400 hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200 transition-colors">
-                          <FiEye size={14} />
-                        </button>
-                        <button title="Download" className="h-8 w-8 flex items-center justify-center rounded-lg border border-gray-200 text-gray-400 hover:bg-emerald-50 hover:text-emerald-600 hover:border-emerald-200 transition-colors">
-                          <FiDownload size={14} />
-                        </button>
-                        <button title="Report" className="h-8 w-8 flex items-center justify-center rounded-lg border border-gray-200 text-gray-400 hover:bg-gray-100 hover:text-gray-700 transition-colors">
-                          <FiFileText size={14} />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-
-                {filtered.length === 0 && (
-                  <tr>
-                    <td colSpan={7} className="px-6 py-16 text-center">
-                      <div className="mx-auto flex max-w-xs flex-col items-center">
-                        <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-xl bg-gray-100">
-                          <FiFolder size={22} className="text-gray-400" />
-                        </div>
-                        <p className="font-medium text-gray-700">No sources found</p>
-                        <p className="mt-1 text-xs text-gray-400">Try adjusting your search or filter.</p>
-                        {hasFilter && (
-                          <button onClick={() => { setSearch(""); setStatusFilter(""); }} className="mt-3 text-xs font-medium text-blue-600 hover:underline">
-                            Clear filters
-                          </button>
-                        )}
-                      </div>
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
+              {filteredSources.length === 0 && (
+                <tr>
+                  <td
+                    colSpan="7"
+                    className="text-center py-12 text-slate-500"
+                  >
+                    No source records found.
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
         </div>
 
       </div>
+
+      {/* View Modal */}
+      {selectedSource && (
+        <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm flex justify-end">
+          <div className="w-full max-w-xl h-screen bg-white shadow-2xl overflow-y-auto">
+            <div className="flex items-start justify-between p-6 border-b border-slate-100">
+              <div>
+                <h2 className="text-2xl font-bold text-slate-900">
+                  Final Source Details
+                </h2>
+
+                <p className="text-sm text-slate-500 mt-1">
+                  View uploaded source and release information.
+                </p>
+              </div>
+
+              <button
+                onClick={() => setSelectedSource(null)}
+                className="w-10 h-10 rounded-xl hover:bg-slate-100 flex items-center justify-center"
+              >
+                <FiX />
+              </button>
+            </div>
+
+            <div className="p-6 space-y-5">
+              <div>
+                <p className="text-sm text-slate-500">
+                  Project Name
+                </p>
+
+                <h3 className="text-2xl font-bold text-slate-900 mt-1">
+                  {selectedSource.title}
+                </h3>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="bg-slate-50 rounded-2xl p-4">
+                  <p className="text-sm text-slate-500">
+                    Project Code
+                  </p>
+
+                  <h4 className="font-bold text-slate-900 mt-1">
+                    {selectedSource.projectCode}
+                  </h4>
+                </div>
+
+                <div className="bg-slate-50 rounded-2xl p-4">
+                  <p className="text-sm text-slate-500">
+                    Version
+                  </p>
+
+                  <h4 className="font-bold text-slate-900 mt-1">
+                    {selectedSource.version}
+                  </h4>
+                </div>
+
+                <div className="bg-slate-50 rounded-2xl p-4">
+                  <p className="text-sm text-slate-500">
+                    Uploaded By
+                  </p>
+
+                  <h4 className="font-bold text-slate-900 mt-1">
+                    {selectedSource.uploadedBy}
+                  </h4>
+                </div>
+
+                <div className="bg-slate-50 rounded-2xl p-4">
+                  <p className="text-sm text-slate-500">
+                    Upload Date
+                  </p>
+
+                  <h4 className="font-bold text-slate-900 mt-1">
+                    {selectedSource.uploadedOn}
+                  </h4>
+                </div>
+              </div>
+
+              <div className="bg-blue-50 border border-blue-100 rounded-2xl p-5">
+                <p className="text-sm text-blue-600 font-semibold">
+                  Source Description
+                </p>
+
+                <p className="text-sm text-blue-900 mt-2 leading-7">
+                  {selectedSource.description}
+                </p>
+              </div>
+
+              <div className="flex items-center justify-between bg-slate-50 rounded-2xl p-4">
+                <div>
+                  <p className="text-sm text-slate-500">
+                    Current Status
+                  </p>
+
+                  <h4 className="font-bold text-slate-900 mt-1">
+                    {selectedSource.status}
+                  </h4>
+                </div>
+
+                <span
+                  className={`px-4 py-2 rounded-full text-sm font-semibold
+                  ${
+                    selectedSource.status === "Active"
+                      ? "bg-green-100 text-green-700"
+                      : "bg-orange-100 text-orange-700"
+                  }`}
+                >
+                  {selectedSource.status}
+                </span>
+              </div>
+            </div>
+
+            <div className="sticky bottom-0 bg-white border-t border-slate-100 p-5 flex justify-end gap-3">
+              <button
+                onClick={() => setSelectedSource(null)}
+                className="px-5 py-3 rounded-xl border border-slate-200 text-slate-700 font-medium hover:bg-slate-50"
+              >
+                Close
+              </button>
+
+              <button className="px-5 py-3 rounded-xl bg-blue-600 text-white font-semibold hover:bg-blue-700">
+                Download Source
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Add Modal */}
+      {openModal && (
+        <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm flex justify-end">
+          <div className="w-full max-w-xl h-screen bg-white shadow-2xl overflow-y-auto">
+            <div className="flex items-start justify-between p-6 border-b border-slate-100">
+              <div>
+                <h2 className="text-2xl font-bold text-slate-900">
+                  Add Final Source
+                </h2>
+
+                <p className="text-sm text-slate-500 mt-1">
+                  Upload and manage final delivery source files.
+                </p>
+              </div>
+
+              <button
+                onClick={() => setOpenModal(false)}
+                className="w-10 h-10 rounded-xl hover:bg-slate-100 flex items-center justify-center"
+              >
+                <FiX />
+              </button>
+            </div>
+
+            <div className="p-6 space-y-5">
+              <div>
+                <label className="text-sm font-medium text-slate-700">
+                  Project Title
+                </label>
+
+                <input
+                  type="text"
+                  placeholder="Enter project title"
+                  className="w-full mt-2 px-4 py-3 rounded-xl border border-slate-200 outline-none focus:ring-4 focus:ring-blue-100"
+                />
+              </div>
+
+              <div>
+                <label className="text-sm font-medium text-slate-700">
+                  Project Code
+                </label>
+
+                <input
+                  type="text"
+                  placeholder="PRJ-2026-001"
+                  className="w-full mt-2 px-4 py-3 rounded-xl border border-slate-200 outline-none focus:ring-4 focus:ring-blue-100"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="text-sm font-medium text-slate-700">
+                    Source Type
+                  </label>
+
+                  <select className="w-full mt-2 px-4 py-3 rounded-xl border border-slate-200 outline-none focus:ring-4 focus:ring-blue-100">
+                    <option>Git Repository</option>
+                    <option>Zip File</option>
+                    <option>Drive Link</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="text-sm font-medium text-slate-700">
+                    Version
+                  </label>
+
+                  <input
+                    type="text"
+                    placeholder="v1.0"
+                    className="w-full mt-2 px-4 py-3 rounded-xl border border-slate-200 outline-none focus:ring-4 focus:ring-blue-100"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="text-sm font-medium text-slate-700">
+                  Upload Source
+                </label>
+
+                <div className="mt-2 border-2 border-dashed border-slate-200 rounded-2xl p-8 text-center hover:border-blue-400 transition">
+                  <FiUploadCloud
+                    className="mx-auto text-slate-400 mb-3"
+                    size={34}
+                  />
+
+                  <p className="text-sm text-slate-600">
+                    Click to upload source file
+                  </p>
+
+                  <p className="text-xs text-slate-400 mt-1">
+                    ZIP, RAR or repository link
+                  </p>
+                </div>
+              </div>
+
+              <div>
+                <label className="text-sm font-medium text-slate-700">
+                  Description
+                </label>
+
+                <textarea
+                  rows={5}
+                  placeholder="Enter source delivery notes..."
+                  className="w-full mt-2 px-4 py-3 rounded-xl border border-slate-200 outline-none resize-none focus:ring-4 focus:ring-blue-100"
+                />
+              </div>
+            </div>
+
+            <div className="sticky bottom-0 bg-white border-t border-slate-100 p-5 flex justify-end gap-3">
+              <button
+                onClick={() => setOpenModal(false)}
+                className="px-5 py-3 rounded-xl border border-slate-200 text-slate-700 font-medium hover:bg-slate-50"
+              >
+                Cancel
+              </button>
+
+              <button className="px-5 py-3 rounded-xl bg-blue-600 text-white font-semibold hover:bg-blue-700">
+                Save Source
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

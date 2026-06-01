@@ -1,8 +1,14 @@
 import { useMemo, useState } from "react";
 import {
-  FiSearch, FiPlus, FiEye, FiEdit, FiTrash2,
-  FiCalendar, FiBriefcase, FiTrendingUp, FiClock,
-  FiCheckCircle, FiFileText, FiChevronDown,
+  FiSearch,
+  FiPlus,
+  FiFilter,
+  FiEye,
+  FiEdit2,
+  FiTrash2,
+  FiCalendar,
+  FiBriefcase,
+  FiTrendingUp,
 } from "react-icons/fi";
 
 const rfpData = [
@@ -12,10 +18,8 @@ const rfpData = [
     client: "Colan Infotech",
     department: "Software Development",
     status: "In Review",
-    priority: "High",
     budget: "₹8,50,000",
     deadline: "28 May 2026",
-    owner: "Project Manager",
   },
   {
     id: "RFP-2026-002",
@@ -23,10 +27,8 @@ const rfpData = [
     client: "Real Estate Client",
     department: "Web Application",
     status: "Approved",
-    priority: "Medium",
     budget: "₹5,20,000",
     deadline: "02 Jun 2026",
-    owner: "Business Analyst",
   },
   {
     id: "RFP-2026-003",
@@ -34,35 +36,15 @@ const rfpData = [
     client: "MediCare Group",
     department: "CRM",
     status: "Pending",
-    priority: "High",
     budget: "₹12,00,000",
     deadline: "10 Jun 2026",
-    owner: "Tech Lead",
   },
 ];
 
-const STATUS_STYLES = {
-  Approved:  "bg-emerald-50 text-emerald-700 border border-emerald-200",
-  "In Review": "bg-blue-50 text-blue-700 border border-blue-200",
-  Pending:   "bg-amber-50 text-amber-700 border border-amber-200",
-  Rejected:  "bg-red-50 text-red-700 border border-red-200",
-};
-
-const PRIORITY_STYLES = {
-  High:   "text-red-600",
-  Medium: "text-amber-600",
-  Low:    "text-green-600",
-};
-
-const PRIORITY_DOT = {
-  High:   "bg-red-500",
-  Medium: "bg-amber-500",
-  Low:    "bg-green-500",
-};
-
 function RFP() {
-  const [search, setSearch]   = useState("");
-  const [status, setStatus]   = useState("");
+  const [search, setSearch] = useState("");
+  const [status, setStatus] = useState("All");
+  const [openModal, setOpenModal] = useState(false);
 
   const filteredRfps = useMemo(() => {
     const kw = search.toLowerCase();
@@ -79,80 +61,120 @@ function RFP() {
   }, [search, status]);
 
   const stats = [
-    { label: "Total RFPs",  value: rfpData.length,                                          icon: FiBriefcase,   iconBg: "bg-slate-100 text-slate-600" },
-    { label: "Approved",    value: rfpData.filter((r) => r.status === "Approved").length,   icon: FiCheckCircle, iconBg: "bg-emerald-100 text-emerald-600" },
-    { label: "In Review",   value: rfpData.filter((r) => r.status === "In Review").length,  icon: FiTrendingUp,  iconBg: "bg-blue-100 text-blue-600" },
-    { label: "Pending",     value: rfpData.filter((r) => r.status === "Pending").length,    icon: FiClock,       iconBg: "bg-amber-100 text-amber-600" },
+    {
+      label: "Total RFPs",
+      value: rfpData.length,
+      icon: FiBriefcase,
+      iconBg: "bg-blue-50",
+      iconColor: "text-blue-600",
+    },
+    {
+      label: "Approved",
+      value: 1,
+      icon: FiTrendingUp,
+      iconBg: "bg-emerald-50",
+      iconColor: "text-emerald-600",
+    },
+    {
+      label: "In Review",
+      value: 1,
+      icon: FiEye,
+      iconBg: "bg-violet-50",
+      iconColor: "text-violet-600",
+    },
+    {
+      label: "Pending",
+      value: 1,
+      icon: FiCalendar,
+      iconBg: "bg-orange-50",
+      iconColor: "text-orange-600",
+    },
   ];
 
   const clearFilters = () => { setSearch(""); setStatus(""); };
   const hasFilter = search || status;
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
-      <div className="mx-auto max-w-7xl space-y-5">
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+        <div>
+          <h1 className="text-[30px] font-bold tracking-[-0.03em] text-slate-900">
+            RFP Management
+          </h1>
 
-        {/* ── Page Header ── */}
-        <div className="flex items-center justify-between">
-          <div>
-            <p className="text-xs font-medium text-gray-400 uppercase tracking-widest mb-1">
-              Estimation Module
-            </p>
-            <h1 className="text-xl font-semibold text-gray-900">RFP Management</h1>
-            <p className="text-sm text-gray-500 mt-0.5">
-              Track proposals, departments, estimation status and deadlines
-            </p>
-          </div>
-          <button className="inline-flex items-center gap-2 rounded-lg bg-blue-700 px-4 py-2.5 text-sm font-medium text-white hover:bg-blue-800 transition-colors">
-            <FiPlus size={15} />
-            Add New RFP
-          </button>
+          <p className="text-sm text-slate-500 mt-2">
+            Manage client proposals, approvals and project estimations.
+          </p>
         </div>
 
-        {/* ── Stats ── */}
-        <div className="grid grid-cols-2 gap-4 xl:grid-cols-4">
-          {stats.map(({ label, value, icon: Icon, iconBg }) => (
-            <div key={label} className="bg-white border border-gray-100 rounded-xl p-4 flex items-center gap-3 shadow-sm">
-              <div className={`h-10 w-10 rounded-lg flex items-center justify-center flex-shrink-0 ${iconBg}`}>
-                <Icon size={18} />
-              </div>
-              <div>
-                <p className="text-2xl font-semibold text-gray-900 leading-none">{value}</p>
-                <p className="text-xs text-gray-500 mt-1">{label}</p>
+        <button className="h-11 px-5 rounded-xl bg-blue-600 text-white text-sm font-semibold flex items-center gap-2 hover:bg-blue-700 transition-all shadow-sm" onClick={() => setOpenModal(true)}>
+  
+          <FiPlus size={16} />
+          Add New RFP
+        </button>
+      </div>
+
+      {/* Stats */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+        {stats.map((item, index) => {
+          const Icon = item.icon;
+
+          return (
+            <div
+              key={item.label}
+              className={`bg-white border border-slate-100 rounded-2xl px-5 py-5 shadow-sm hover:border-slate-200 transition-all ${
+                index === 0 ? "ring-1 ring-blue-50" : ""
+              }`}
+            >
+              <div className="flex items-start justify-between">
+                <div>
+                  <p className="text-sm text-slate-500">{item.label}</p>
+
+                  <h2 className="text-[34px] leading-none font-bold text-slate-900 mt-3">
+                    {item.value}
+                  </h2>
+                </div>
+
+                <div
+                  className={`w-12 h-12 rounded-xl flex items-center justify-center ${item.iconBg}`}
+                >
+                  <Icon className={item.iconColor} size={20} />
+                </div>
               </div>
             </div>
           ))}
         </div>
 
-        {/* ── Toolbar ── */}
-        <div className="bg-white border border-gray-100 rounded-xl px-4 py-3 shadow-sm flex flex-col gap-3 sm:flex-row sm:items-center">
-          <p className="text-sm font-medium text-gray-700 flex-shrink-0">RFP List</p>
-
-          {/* Search */}
+      {/* Filters */}
+      <div className="bg-white border border-slate-100 rounded-2xl p-4 shadow-sm">
+        <div className="flex flex-col lg:flex-row gap-3 lg:items-center">
           <div className="relative flex-1">
-            <FiSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={14} />
+            <FiSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
+
             <input
               type="text"
               placeholder="Search by title, code, client or department…"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full rounded-lg border border-gray-200 bg-gray-50 py-2 pl-9 pr-3 text-sm text-gray-700 outline-none focus:border-blue-400 focus:bg-white focus:ring-2 focus:ring-blue-100 transition"
+              className="w-full h-12 pl-11 pr-4 rounded-xl border border-slate-200 bg-white text-sm text-slate-700 placeholder:text-slate-400 outline-none focus:border-blue-400 focus:ring-4 focus:ring-blue-50 transition-all"
             />
           </div>
 
-          {/* Status filter */}
-          <div className="relative sm:w-44">
-            <FiChevronDown className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-gray-400" size={14} />
+          <div className="flex items-center gap-3">
+            <div className="w-11 h-11 rounded-xl border border-slate-200 flex items-center justify-center text-slate-400 bg-white">
+              <FiFilter size={16} />
+            </div>
+
             <select
               value={status}
               onChange={(e) => setStatus(e.target.value)}
-              className="w-full appearance-none rounded-lg border border-gray-200 bg-gray-50 py-2 pl-3 pr-8 text-sm text-gray-700 outline-none focus:border-blue-400 focus:bg-white focus:ring-2 focus:ring-blue-100 transition"
+              className="h-12 min-w-[110px] px-4 rounded-xl border border-slate-200 bg-white text-sm text-slate-700 outline-none focus:border-blue-400 focus:ring-4 focus:ring-blue-50"
             >
               <option value="">All Status</option>
               <option>Pending</option>
               <option>In Review</option>
               <option>Approved</option>
-              <option>Rejected</option>
             </select>
           </div>
 
@@ -166,107 +188,272 @@ function RFP() {
           )}
         </div>
 
-        {/* ── Table ── */}
-        <div className="bg-white border border-gray-100 rounded-xl shadow-sm overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="w-full min-w-[960px] text-sm">
-              <thead>
-                <tr className="border-b border-gray-100 bg-gray-50">
-                  {["RFP Details", "Client", "Department", "Budget", "Deadline", "Priority", "Status", "Actions"].map((h, i) => (
-                    <th
-                      key={h}
-                      className={`px-5 py-3 text-xs font-medium uppercase tracking-wider text-gray-400 ${i === 7 ? "text-right" : "text-left"}`}
-                    >
-                      {h}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-
-              <tbody className="divide-y divide-gray-50">
-                {filteredRfps.map((rfp) => (
-                  <tr key={rfp.id} className="hover:bg-slate-50 transition-colors">
-
-                    {/* RFP Details */}
-                    <td className="px-5 py-4">
-                      <p className="font-medium text-gray-900">{rfp.title}</p>
-                      <p className="mt-0.5 text-xs text-gray-400">{rfp.id} · {rfp.owner}</p>
-                    </td>
-
-                    {/* Client */}
-                    <td className="px-5 py-4 text-gray-700">{rfp.client}</td>
-
-                    {/* Department */}
-                    <td className="px-5 py-4 text-gray-500">{rfp.department}</td>
-
-                    {/* Budget */}
-                    <td className="px-5 py-4 font-medium text-gray-900">{rfp.budget}</td>
-
-                    {/* Deadline */}
-                    <td className="px-5 py-4">
-                      <span className="inline-flex items-center gap-1.5 text-gray-500">
-                        <FiCalendar size={13} className="text-gray-400" />
-                        {rfp.deadline}
-                      </span>
-                    </td>
-
-                    {/* Priority */}
-                    <td className="px-5 py-4">
-                      <span className={`inline-flex items-center gap-1.5 text-xs font-medium ${PRIORITY_STYLES[rfp.priority]}`}>
-                        <span className={`h-1.5 w-1.5 rounded-full ${PRIORITY_DOT[rfp.priority]}`} />
-                        {rfp.priority}
-                      </span>
-                    </td>
-
-                    {/* Status */}
-                    <td className="px-5 py-4">
-                      <span className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium ${STATUS_STYLES[rfp.status] || "bg-gray-100 text-gray-600 border border-gray-200"}`}>
-                        {rfp.status}
-                      </span>
-                    </td>
-
-                    {/* Actions */}
-                    <td className="px-5 py-4">
-                      <div className="flex items-center justify-end gap-1.5">
-                        <button className="h-8 w-8 flex items-center justify-center rounded-lg border border-gray-200 text-gray-400 hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200 transition-colors">
-                          <FiEye size={14} />
-                        </button>
-                        <button className="h-8 w-8 flex items-center justify-center rounded-lg border border-gray-200 text-gray-400 hover:bg-gray-100 hover:text-gray-700 transition-colors">
-                          <FiEdit size={14} />
-                        </button>
-                        <button className="h-8 w-8 flex items-center justify-center rounded-lg border border-gray-200 text-gray-400 hover:bg-red-50 hover:text-red-600 hover:border-red-200 transition-colors">
-                          <FiTrash2 size={14} />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
+      {/* Table */}
+      <div className="bg-white border border-slate-100 rounded-2xl overflow-hidden shadow-sm">
+        <div className="overflow-x-auto">
+          <table className="w-full min-w-[1050px]">
+            <thead className="bg-slate-50 border-b border-slate-100">
+              <tr>
+                {[
+                  "RFP Details",
+                  "Client",
+                  "Department",
+                  "Budget",
+                  "Deadline",
+                  "Status",
+                  "Action",
+                ].map((head) => (
+                  <th
+                    key={head}
+                    className={`px-5 py-4 text-[11px] font-bold uppercase tracking-[0.05em] text-slate-500 ${
+                      head === "Action" ? "text-right" : "text-left"
+                    }`}
+                  >
+                    {head}
+                  </th>
                 ))}
+              </tr>
+            </thead>
 
-                {filteredRfps.length === 0 && (
-                  <tr>
-                    <td colSpan={8} className="px-6 py-16 text-center">
-                      <div className="mx-auto flex max-w-xs flex-col items-center">
-                        <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-xl bg-gray-100">
-                          <FiFileText size={22} className="text-gray-400" />
-                        </div>
-                        <p className="font-medium text-gray-700">No RFP records found</p>
-                        <p className="mt-1 text-xs text-gray-400">
-                          Try adjusting your search or status filter.
-                        </p>
-                        {hasFilter && (
-                          <button onClick={clearFilters} className="mt-3 text-xs font-medium text-blue-600 hover:underline">
-                            Clear filters
-                          </button>
-                        )}
-                      </div>
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
+            <tbody>
+              {filteredRfps.map((rfp) => (
+                <tr
+                  key={rfp.id}
+                  className="border-b border-slate-100 hover:bg-slate-50/70 transition-all"
+                >
+                  <td className="px-5 py-5">
+                    <p className="font-semibold text-[15px] text-slate-900">
+                      {rfp.title}
+                    </p>
+
+                    <p className="text-xs text-slate-400 mt-1">{rfp.id}</p>
+                  </td>
+
+                  <td className="px-5 py-5 text-sm text-slate-700">
+                    {rfp.client}
+                  </td>
+
+                  <td className="px-5 py-5 text-sm text-slate-700">
+                    {rfp.department}
+                  </td>
+
+                  <td className="px-5 py-5 text-sm font-semibold text-slate-900">
+                    {rfp.budget}
+                  </td>
+
+                  <td className="px-5 py-5 text-sm text-slate-700">
+                    {rfp.deadline}
+                  </td>
+
+                  <td className="px-5 py-5">
+                    <span
+                      className={`inline-flex px-3 py-1 rounded-full text-xs font-semibold ${
+                        rfp.status === "Approved"
+                          ? "bg-emerald-50 text-emerald-700"
+                          : rfp.status === "In Review"
+                          ? "bg-blue-50 text-blue-700"
+                          : "bg-orange-50 text-orange-700"
+                      }`}
+                    >
+                      {rfp.status}
+                    </span>
+                  </td>
+
+                  <td className="px-5 py-5">
+                    <div className="flex justify-end items-center gap-1">
+                      <button className="w-9 h-9 rounded-lg text-slate-500 hover:text-blue-600 hover:bg-blue-50 transition-all flex items-center justify-center">
+                        <FiEye size={16} />
+                      </button>
+
+                      <button className="w-9 h-9 rounded-lg text-slate-500 hover:text-slate-700 hover:bg-slate-100 transition-all flex items-center justify-center">
+                        <FiEdit2 size={15} />
+                      </button>
+
+                      <button className="w-9 h-9 rounded-lg text-slate-500 hover:text-red-600 hover:bg-red-50 transition-all flex items-center justify-center">
+                        <FiTrash2 size={15} />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+
+              {filteredRfps.length === 0 && (
+                <tr>
+                  <td
+                    colSpan="7"
+                    className="py-16 text-center text-sm text-slate-500"
+                  >
+                    No RFP records found.
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+          {openModal && (
+  <div className="fixed inset-0 z-50 flex justify-end bg-slate-900/30 backdrop-blur-[2px]">
+    <div className="w-full max-w-[520px] h-screen bg-white shadow-2xl flex flex-col animate-slideIn">
+
+      {/* Header */}
+      <div className="px-6 py-5 border-b border-slate-100 flex items-start justify-between">
+        <div>
+          <h2 className="text-xl font-bold text-slate-900">
+            Create New RFP
+          </h2>
+
+          <p className="text-sm text-slate-500 mt-1">
+            Add proposal details and workflow information.
+          </p>
+        </div>
+
+        <button
+          onClick={() => setOpenModal(false)}
+          className="w-9 h-9 rounded-lg hover:bg-slate-100 text-slate-500 flex items-center justify-center"
+        >
+          ✕
+        </button>
+      </div>
+
+      {/* Body */}
+      <div className="flex-1 overflow-y-auto px-6 py-6 space-y-6">
+
+        {/* Basic Info */}
+        <div className="space-y-4">
+          <h3 className="text-sm font-semibold text-slate-900">
+            Basic Information
+          </h3>
+
+          <div>
+            <label className="text-sm font-medium text-slate-700 block mb-2">
+              RFP Title
+            </label>
+
+            <input
+              type="text"
+              placeholder="Enter project title"
+              className="w-full h-12 px-4 rounded-xl border border-slate-200 focus:border-blue-400 focus:ring-4 focus:ring-blue-50 outline-none text-sm"
+            />
+          </div>
+
+          <div>
+            <label className="text-sm font-medium text-slate-700 block mb-2">
+              Client Name
+            </label>
+
+            <input
+              type="text"
+              placeholder="Enter client/company name"
+              className="w-full h-12 px-4 rounded-xl border border-slate-200 focus:border-blue-400 focus:ring-4 focus:ring-blue-50 outline-none text-sm"
+            />
+          </div>
+
+          <div>
+            <label className="text-sm font-medium text-slate-700 block mb-2">
+              Department
+            </label>
+
+            <select className="w-full h-12 px-4 rounded-xl border border-slate-200 focus:border-blue-400 focus:ring-4 focus:ring-blue-50 outline-none text-sm">
+              <option>Software Development</option>
+              <option>CRM</option>
+              <option>Web Application</option>
+            </select>
           </div>
         </div>
 
+        {/* Business Info */}
+        <div className="space-y-4">
+          <h3 className="text-sm font-semibold text-slate-900">
+            Business Details
+          </h3>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="text-sm font-medium text-slate-700 block mb-2">
+                Budget
+              </label>
+
+              <input
+                type="text"
+                placeholder="₹0.00"
+                className="w-full h-12 px-4 rounded-xl border border-slate-200 focus:border-blue-400 focus:ring-4 focus:ring-blue-50 outline-none text-sm"
+              />
+            </div>
+
+            <div>
+              <label className="text-sm font-medium text-slate-700 block mb-2">
+                Deadline
+              </label>
+
+              <input
+                type="date"
+                className="w-full h-12 px-4 rounded-xl border border-slate-200 focus:border-blue-400 focus:ring-4 focus:ring-blue-50 outline-none text-sm"
+              />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="text-sm font-medium text-slate-700 block mb-2">
+                Priority
+              </label>
+
+              <select className="w-full h-12 px-4 rounded-xl border border-slate-200 focus:border-blue-400 focus:ring-4 focus:ring-blue-50 outline-none text-sm">
+                <option>High</option>
+                <option>Medium</option>
+                <option>Low</option>
+              </select>
+            </div>
+
+            <div>
+              <label className="text-sm font-medium text-slate-700 block mb-2">
+                Status
+              </label>
+
+              <select className="w-full h-12 px-4 rounded-xl border border-slate-200 focus:border-blue-400 focus:ring-4 focus:ring-blue-50 outline-none text-sm">
+                <option>Pending</option>
+                <option>In Review</option>
+                <option>Approved</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        {/* Description */}
+        <div>
+          <label className="text-sm font-medium text-slate-700 block mb-2">
+            Project Requirements
+          </label>
+
+          <textarea
+            rows={5}
+            placeholder="Write project scope and proposal details..."
+            className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-blue-400 focus:ring-4 focus:ring-blue-50 outline-none text-sm resize-none"
+          />
+        </div>
+      </div>
+
+      {/* Footer */}
+      <div className="px-6 py-4 border-t border-slate-100 flex items-center justify-between bg-white">
+        <p className="text-xs text-slate-400">
+          All changes are securely managed.
+        </p>
+
+        <div className="flex items-center gap-3">
+          <button
+            onClick={() => setOpenModal(false)}
+            className="h-11 px-5 rounded-xl border border-slate-200 text-sm font-medium text-slate-600 hover:bg-slate-50"
+          >
+            Cancel
+          </button>
+
+          <button className="h-11 px-5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold">
+            Create RFP
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+)}
+        </div>
       </div>
     </div>
   );
