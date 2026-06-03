@@ -22,6 +22,13 @@ const subNavItems = {
     { name: "Resource List", path: "/dashboard/final-resource" },
     { name: "Add Resource",  path: "/dashboard/final-resource/add" },
   ],
+  settings : [
+    {name : "Employee basic details", path : "/dashboard/settings"},
+    {name : "Qualification", path : "/dashboard/qualification"},
+    {name : "Personal", path : "/dashboard/personal"},
+    {name : "Address", path : "/dashboard/address"},
+    {name : "Account Settings", path : "/dashboard/account-settings"},
+  ]
 };
 
 /* Page titles map — shown in the topbar */

@@ -5,6 +5,7 @@ import {
   FiAlertCircle,
   FiPlus,
   FiArrowRight,
+  
 } from "react-icons/fi";
 
 const stats = [
@@ -85,7 +86,7 @@ function DashboardHome() {
       <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-5">
         <div>
           <h1 className="text-3xl font-bold text-slate-900">
-            Welcome back, Zaid 👋
+            Welcome back, Kaif  
           </h1>
 
           <p className="text-slate-500 mt-1">

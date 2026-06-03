@@ -39,19 +39,6 @@ const sources = [
   },
 ];
 
-const STATUS_STYLES = {
-  Active:   "bg-emerald-50 text-emerald-700 border border-emerald-200",
-  Review:   "bg-amber-50 text-amber-700 border border-amber-200",
-  Archived: "bg-slate-100 text-slate-600 border border-slate-200",
-};
-
-const SOURCE_TYPE_ICON = {
-  "Git Repository": "bg-slate-100 text-slate-700",
-  "Zip File":       "bg-blue-50 text-blue-700",
-  "Drive Link":     "bg-green-50 text-green-700",
-  "Document Link":  "bg-violet-50 text-violet-700",
-};
-
 function FinalSourceList() {
   const [search, setSearch] = useState("");
   const [openModal, setOpenModal] = useState(false);
@@ -159,6 +146,7 @@ function FinalSourceList() {
             className="w-full pl-11 pr-4 py-3 rounded-2xl border border-slate-200 text-sm outline-none focus:ring-4 focus:ring-blue-100 focus:border-blue-500"
           />
         </div>
+      </div>
 
       {/* Table */}
       <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
@@ -284,7 +272,6 @@ function FinalSourceList() {
             </tbody>
           </table>
         </div>
-
       </div>
 
       {/* View Modal */}

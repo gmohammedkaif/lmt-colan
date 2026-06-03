@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import {
   FiSearch,
   FiPlus,
@@ -46,19 +46,16 @@ function RFP() {
   const [status, setStatus] = useState("All");
   const [openModal, setOpenModal] = useState(false);
 
-  const filteredRfps = useMemo(() => {
-    const kw = search.toLowerCase();
-    return rfpData.filter((r) => {
-      const matchSearch =
-        !kw ||
-        r.title.toLowerCase().includes(kw) ||
-        r.id.toLowerCase().includes(kw) ||
-        r.client.toLowerCase().includes(kw) ||
-        r.department.toLowerCase().includes(kw);
-      const matchStatus = !status || r.status === status;
-      return matchSearch && matchStatus;
-    });
-  }, [search, status]);
+  const filteredRfps = rfpData.filter((rfp) => {
+    const matchesSearch =
+      rfp.title.toLowerCase().includes(search.toLowerCase()) ||
+      rfp.id.toLowerCase().includes(search.toLowerCase()) ||
+      rfp.client.toLowerCase().includes(search.toLowerCase());
+
+    const matchesStatus = status === "All" || rfp.status === status;
+
+    return matchesSearch && matchesStatus;
+  });
 
   const stats = [
     {
@@ -90,9 +87,6 @@ function RFP() {
       iconColor: "text-orange-600",
     },
   ];
-
-  const clearFilters = () => { setSearch(""); setStatus(""); };
-  const hasFilter = search || status;
 
   return (
     <div className="space-y-6">
@@ -143,8 +137,9 @@ function RFP() {
                 </div>
               </div>
             </div>
-          ))}
-        </div>
+          );
+        })}
+      </div>
 
       {/* Filters */}
       <div className="bg-white border border-slate-100 rounded-2xl p-4 shadow-sm">
@@ -154,7 +149,7 @@ function RFP() {
 
             <input
               type="text"
-              placeholder="Search by title, code, client or department…"
+              placeholder="Search by RFP title, code or client..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               className="w-full h-12 pl-11 pr-4 rounded-xl border border-slate-200 bg-white text-sm text-slate-700 placeholder:text-slate-400 outline-none focus:border-blue-400 focus:ring-4 focus:ring-blue-50 transition-all"
@@ -171,22 +166,14 @@ function RFP() {
               onChange={(e) => setStatus(e.target.value)}
               className="h-12 min-w-[110px] px-4 rounded-xl border border-slate-200 bg-white text-sm text-slate-700 outline-none focus:border-blue-400 focus:ring-4 focus:ring-blue-50"
             >
-              <option value="">All Status</option>
+              <option>All</option>
               <option>Pending</option>
               <option>In Review</option>
               <option>Approved</option>
             </select>
           </div>
-
-          {hasFilter && (
-            <button
-              onClick={clearFilters}
-              className="text-xs font-medium text-gray-500 hover:text-gray-700 px-3 py-2 rounded-lg border border-gray-200 hover:bg-gray-50 transition whitespace-nowrap"
-            >
-              Clear filters
-            </button>
-          )}
         </div>
+      </div>
 
       {/* Table */}
       <div className="bg-white border border-slate-100 rounded-2xl overflow-hidden shadow-sm">

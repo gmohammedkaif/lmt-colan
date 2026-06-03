@@ -18,6 +18,12 @@ import TimesheetEditRequest from "./pages/dashboard/TimesheetEditRequest";
 import ClientTimesheet from "./pages/dashboard/ClientTimesheet";
 import TimesheetApproval from "./pages/dashboard/TimesheetApproval";
 import ProjectDetails from "./pages/dashboard/ProjectDetails";
+import Settings from "./pages/dashboard/Settings";
+import EmployeeBasicDetails from "./pages/dashboard/EmployeeBasicDetails";
+import QualificationDetails from "./pages/dashboard/Qualification";
+import Qualification from "./pages/dashboard/Qualification";
+import Personal from "./pages/dashboard/Personal";
+import AddressCommDetails from "./pages/dashboard/Address";
 
 function App() {
   return (
@@ -44,6 +50,11 @@ function App() {
         <Route path="qa" element={<Qa/>} />
          <Route path="final-resource" element={<FinalSourceList />} />
   <Route path="final-resource/add" element={<AddFinalSource />} />
+  {/* <Route path="employee-basic-details" element={<EmployeeBasicDetails />} /> */}
+  <Route path="settings" element={<Settings />} />
+  <Route path="qualification" element={<Qualification />} />
+  <Route path="personal" element={<Personal />} />
+  <Route path="address" element={<AddressCommDetails />} />
       </Route>
     </Routes>
   );

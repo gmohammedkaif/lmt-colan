@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import {
   FiSearch,
   FiEye,
@@ -55,38 +55,6 @@ const qaProjects = [
   },
 ];
 
-const STATUS_STYLES = {
-  Active:       "bg-emerald-50 text-emerald-700 border border-emerald-200",
-  "In Testing": "bg-blue-50 text-blue-700 border border-blue-200",
-  Completed:    "bg-slate-100 text-slate-600 border border-slate-200",
-};
-
-const PRIORITY_STYLES = {
-  High:   "text-red-600",
-  Medium: "text-amber-600",
-  Low:    "text-green-600",
-};
-
-const PRIORITY_DOT = {
-  High:   "bg-red-500",
-  Medium: "bg-amber-500",
-  Low:    "bg-green-500",
-};
-
-// Tester avatar color pairs  [bg, text]
-const AVATAR_COLORS = [
-  ["bg-blue-100", "text-blue-700"],
-  ["bg-purple-100", "text-purple-700"],
-  ["bg-teal-100", "text-teal-700"],
-  ["bg-orange-100", "text-orange-700"],
-];
-
-function passRateColor(rate) {
-  if (rate >= 90) return "bg-emerald-500";
-  if (rate >= 75) return "bg-blue-500";
-  return "bg-amber-500";
-}
-
 function QA() {
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState("All");
@@ -136,9 +104,6 @@ function QA() {
       color: "red",
     },
   ];
-
-  const hasFilter = search || status || priority;
-  const resetFilters = () => { setSearch(""); setStatus(""); setPriority(""); };
 
   return (
     <div className="space-y-6">
@@ -199,8 +164,9 @@ function QA() {
                 </div>
               </div>
             </div>
-          ))}
-        </div>
+          );
+        })}
+      </div>
 
       {/* Filters */}
       <div className="bg-white rounded-2xl p-5 border border-slate-100 shadow-sm">
@@ -210,7 +176,7 @@ function QA() {
 
             <input
               type="text"
-              placeholder="Search project, tester or QA code…"
+              placeholder="Search project, tester or QA code..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               className="w-full pl-11 pr-4 py-3 rounded-2xl border border-slate-200 text-sm outline-none focus:ring-4 focus:ring-blue-100 focus:border-blue-500"

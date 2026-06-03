@@ -9,8 +9,9 @@ import {
   FiShield,
   FiUsers,
   FiLogOut,
+   FiSettings 
 } from "react-icons/fi";
-import colanlogo from '../../assets/colonLogo.webp';
+import colanlogo from '../../assets/colan-login-logo.png';
 
 const menuItems = [
   { name: "Dashboard",      path: "/dashboard",                    icon: FiHome,        accent: "#2563eb" },
@@ -21,6 +22,7 @@ const menuItems = [
   { name: "View Timesheet", path: "/dashboard/timesheet",          icon: FiClock,       accent: "#dc2626" },
   { name: "QA",             path: "/dashboard/qa",                 icon: FiShield,      accent: "#9333ea" },
   { name: "Final source List",   path: "/dashboard/final-resource",icon: FiUsers,       accent: "#0284c7" },
+  { name: "Settings",   path: "/dashboard/settings",               icon:  FiSettings,       accent: "#808080" },
 ];
 
 function Sidebar() {
@@ -79,17 +81,12 @@ function Sidebar() {
 
     /* LOGO */
     .ci-sidebar-logo {
-      height: 68px;
-      padding: 0 18px;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      border-bottom: 1px solid #F8FAFC;
-      flex-shrink: 0;
+      // height: 80px;
+      padding-top : 15px;
     }
 
     .ci-sidebar-logo img {
-      width: 34px;
+      width: 210px;
       height: 34px;
       object-fit: contain;
       flex-shrink: 0;
@@ -280,11 +277,6 @@ function Sidebar() {
   {/* LOGO */}
   <div className="ci-sidebar-logo">
     <img src={colanlogo} alt="logo" />
-
-    <div className="ci-sidebar-brand">
-      <h2>COLAN INFOTECH</h2>
-      <p>Workspace Portal</p>
-    </div>
   </div>
 
   {/* NAVIGATION */}
