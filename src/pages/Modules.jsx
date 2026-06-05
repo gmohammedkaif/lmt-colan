@@ -50,6 +50,15 @@ const modules = [
     tag: "Personal",
   },
   {
+    title: "RFP Estimation",
+    text: "Prepare proposals and resource estimations.",
+    icon: FiFileText,
+    path: "/dashboard/rfp",
+    accent: "#EA580C",
+    bg: "#FFF7ED",
+    tag: "Proposals",
+  },
+  {
     title: "Projects",
     text: "Track project milestones and active progress.",
     icon: FiFolder,
@@ -67,15 +76,15 @@ const modules = [
     bg: "#F0F9FF",
     tag: "Tracking",
   },
-  {
-    title: "Calendar",
-    text: "Manage schedules and upcoming deadlines.",
-    icon: FiCalendar,
-    path: "/dashboard/tasks/calendar",
-    accent: "#DB2777",
-    bg: "#FDF2F8",
-    tag: "Schedule",
-  },
+  // {
+  //   title: "Calendar",
+  //   text: "Manage schedules and upcoming deadlines.",
+  //   icon: FiCalendar,
+  //   path: "/dashboard/tasks/calendar",
+  //   accent: "#DB2777",
+  //   bg: "#FDF2F8",
+  //   tag: "Schedule",
+  // },
   {
     title: "QA",
     text: "Track testing cycles and software quality.",
@@ -85,15 +94,15 @@ const modules = [
     bg: "#ECFEFF",
     tag: "Testing",
   },
-  {
-    title: "RFP Estimation",
-    text: "Prepare proposals and resource estimations.",
-    icon: FiFileText,
-    path: "/dashboard/rfp",
-    accent: "#EA580C",
-    bg: "#FFF7ED",
-    tag: "Proposals",
-  },
+  // {
+  //   title: "RFP Estimation",
+  //   text: "Prepare proposals and resource estimations.",
+  //   icon: FiFileText,
+  //   path: "/dashboard/rfp",
+  //   accent: "#EA580C",
+  //   bg: "#FFF7ED",
+  //   tag: "Proposals",
+  // },
   {
     title: "Final Resource",
     text: "Manage resource allocation and utilization.",
@@ -103,6 +112,15 @@ const modules = [
     bg: "#EEF2FF",
     tag: "Team",
   },
+  {
+    title: "Calendar",
+    text: "Manage schedules and upcoming deadlines.",
+    icon: FiCalendar,
+    path: "/dashboard/tasks/calendar",
+    accent: "#DB2777",
+    bg: "#FDF2F8",
+    tag: "Schedule",
+  }
 ];
 
 function Modules() {

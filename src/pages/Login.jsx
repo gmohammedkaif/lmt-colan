@@ -51,102 +51,63 @@ function Login() {
 
   return (
     <div
-      className="min-h-screen flex items-center justify-center px-5 py-10"
+      className="relative h-screen overflow-hidden flex items-center justify-center px-4 sm:px-6 lg:px-8"
       style={{
         background: "linear-gradient(180deg, #F8FAFC 0%, #F1F5F9 100%)",
         fontFamily: "Inter, sans-serif",
-        transform: "translateY(-20px)",
       }}
     >
       <div
         className="w-full overflow-hidden bg-white"
         style={{
-          maxWidth: "1080px",
+          maxWidth: "1060px",
           borderRadius: "20px",
           border: "1px solid #D7E0EA",
           boxShadow: "0 10px 30px rgba(15,23,42,0.06)",
-          transform: "translateY(-20px)",
         }}
       >
-        <div className="grid lg:grid-cols-[47%_53%]">
+        <div className="grid grid-cols-1 lg:grid-cols-[47%_53%]">
           {/* LEFT SECTION */}
           <div
             className="hidden lg:flex flex-col justify-between"
             style={{
               background: "#F8FAFC",
-              padding: "40px",
+              padding: "32px",
               borderRight: "1px solid #EDF2F7",
             }}
           >
             <div>
-              {/* LOGO ONLY */}
-              <div className="mb-12">
+              <div className="mb-7">
                 <img
                   src={colanLogo}
                   alt="Colan Infotech"
-                  className="object-contain"
-                  style={{
-                    width: "210px",
-                    height: "auto",
-                  }}
+                  className="w-[190px] object-contain"
                 />
               </div>
 
-              <div className="mb-8">
-                <h1
-                  style={{
-                    fontSize: "36px",
-                    fontWeight: 700,
-                    lineHeight: 1.15,
-                    letterSpacing: "-0.03em",
-                    color: "#0F172A",
-                    marginBottom: "16px",
-                  }}
-                >
+              <div className="mb-5">
+                <h1 className="mb-3 text-[32px] font-bold leading-tight tracking-[-0.03em] text-slate-950">
                   Welcome back
                 </h1>
 
-                <p
-                  style={{
-                    fontSize: "15px",
-                    lineHeight: 1.8,
-                    color: "#475569",
-                    maxWidth: "360px",
-                  }}
-                >
+                <p className="max-w-[360px] text-[14px] leading-7 text-slate-600">
                   Access your workspace, manage timesheets, and track employee
                   productivity securely from one place.
                 </p>
               </div>
 
-              <div
-                style={{
-                  borderRadius: "18px",
-                  border: "1px solid #D7E0EA",
-                  background: "#FFFFFF",
-                  padding: "22px",
-                }}
-              >
-                <div
-                  style={{
-                    width: "110px",
-                    height: "4px",
-                    borderRadius: "999px",
-                    background: "#1D4ED8",
-                    marginBottom: "18px",
-                  }}
-                />
+              <div className="rounded-[18px] border border-[#D7E0EA] bg-white p-5">
+                <div className="mb-4 h-1 w-[110px] rounded-full bg-blue-700" />
 
                 <img
                   src={guy}
                   alt="illustration"
-                  className="w-full object-contain"
-                  style={{ height: "240px" }}
+                  className="h-[210px] w-full object-contain"
                 />
               </div>
             </div>
 
-            <div className="flex items-center gap-8 mt-[30px]">
+            <div className="mt-5 flex flex-wrap items-center gap-x-7 gap-y-3">
               {["Secure Access", "Daily Tracking", "Team Productivity"].map(
                 (item) => (
                   <div key={item} className="flex items-center gap-2">
@@ -161,23 +122,18 @@ function Login() {
           </div>
 
           {/* RIGHT SECTION */}
-          <div className="flex items-center justify-center px-6 py-10 lg:px-14">
-            <form onSubmit={handleLogin} className="w-full max-w-[440px]">
-              {/* MOBILE LOGO ONLY */}
-              <div className="mb-10 flex lg:hidden">
+          <div className="flex items-center justify-center px-6 py-7 lg:px-12">
+            <form onSubmit={handleLogin} className="w-full max-w-[430px]">
+              <div className="mb-7 flex lg:hidden">
                 <img
                   src={colanLogo}
                   alt="Colan Infotech"
-                  className="object-contain"
-                  style={{
-                    width: "190px",
-                    height: "auto",
-                  }}
+                  className="w-[180px] object-contain"
                 />
               </div>
 
-              <div className="mb-8">
-                <h1 className="mb-3 text-[32px] font-bold tracking-[-0.03em] text-slate-950">
+              <div className="mb-6">
+                <h1 className="mb-2 text-[30px] font-bold tracking-[-0.03em] text-slate-950">
                   Sign in
                 </h1>
 
@@ -186,13 +142,13 @@ function Login() {
                 </p>
               </div>
 
-              <div className="mb-5">
+              <div className="mb-4">
                 <label className="mb-2 block text-[12px] font-semibold uppercase tracking-wide text-slate-700">
                   Email
                 </label>
 
                 <div
-                  className={`group flex h-[52px] items-center gap-3 rounded-xl border px-4 bg-white transition-all ${
+                  className={`group flex h-[48px] items-center gap-3 rounded-xl border px-4 bg-white transition-all ${
                     errors.email ? "border-red-400" : "border-slate-300"
                   }`}
                 >
@@ -217,13 +173,13 @@ function Login() {
                 )}
               </div>
 
-              <div className="mb-6">
+              <div className="mb-5">
                 <label className="mb-2 block text-[12px] font-semibold uppercase tracking-wide text-slate-700">
                   Password
                 </label>
 
                 <div
-                  className={`group flex h-[52px] items-center gap-3 rounded-xl border px-4 bg-white transition-all ${
+                  className={`group flex h-[48px] items-center gap-3 rounded-xl border px-4 bg-white transition-all ${
                     errors.password ? "border-red-400" : "border-slate-300"
                   }`}
                 >
@@ -243,7 +199,7 @@ function Login() {
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="text-slate-400 hover:text-slate-600"
+                    className="cursor-pointer text-slate-400 hover:text-slate-600"
                   >
                     {showPassword ? <FiEye size={16} /> : <FiEyeOff size={16} />}
                   </button>
@@ -256,7 +212,7 @@ function Login() {
                 )}
               </div>
 
-              <div className="mb-7 flex items-center justify-between">
+              <div className="mb-5 flex items-center justify-between gap-3">
                 <label className="flex cursor-pointer items-center gap-2 text-[13px] text-slate-600">
                   <input type="checkbox" className="h-4 w-4 accent-blue-700" />
                   Remember me
@@ -264,7 +220,7 @@ function Login() {
 
                 <button
                   type="button"
-                  className="text-[13px] font-medium text-slate-600 hover:text-blue-700"
+                  className="cursor-pointer text-[13px] font-medium text-slate-600 hover:text-blue-700"
                 >
                   Forgot Password?
                 </button>
@@ -273,7 +229,7 @@ function Login() {
               <button
                 type="submit"
                 disabled={loading}
-                className="flex h-[52px] w-full items-center justify-center gap-2 rounded-xl bg-blue-700 text-sm font-semibold text-white transition hover:bg-blue-800"
+                className="flex h-[48px] w-full cursor-pointer items-center justify-center gap-2 rounded-xl bg-blue-700 text-sm font-semibold text-white transition hover:bg-blue-800 disabled:opacity-70"
               >
                 {loading ? (
                   <div className="h-[18px] w-[18px] animate-spin rounded-full border-2 border-white/40 border-t-white" />
@@ -285,7 +241,7 @@ function Login() {
                 )}
               </button>
 
-              <div className="mt-7 flex gap-3 rounded-2xl border border-slate-200 bg-slate-50 p-4">
+              <div className="mt-5 flex gap-3 rounded-2xl border border-slate-200 bg-slate-50 p-4">
                 <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-blue-700">
                   <FiInfo size={16} />
                 </div>
@@ -295,7 +251,7 @@ function Login() {
                     Access Information
                   </h4>
 
-                  <p className="text-[12px] leading-7 text-slate-500">
+                  <p className="text-[12px] leading-6 text-slate-500">
                     This portal is intended for internal employees. Use your
                     official credentials to access your workspace securely.
                   </p>
@@ -306,7 +262,7 @@ function Login() {
         </div>
       </div>
 
-      <p className="fixed bottom-6 left-0 right-0 text-center text-[12px] text-slate-300">
+      <p className="absolute bottom-3 left-0 right-0 text-center text-[12px] text-slate-300">
         © 2026 Colan Infotech. All rights reserved.
       </p>
 
