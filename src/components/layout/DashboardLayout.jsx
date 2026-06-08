@@ -4,49 +4,61 @@ import Footer from "./Footer";
 
 const subNavItems = {
   tasks: [
-    { name: "List View",     path: "/dashboard/tasks" },
+    { name: "List View", path: "/dashboard/tasks" },
     { name: "Calendar View", path: "/dashboard/tasks/calendar" },
   ],
   todo: [
-    { name: "List View",     path: "/dashboard/todo" },
+    { name: "List View", path: "/dashboard/todo" },
     { name: "Calendar View", path: "/dashboard/todo/calendar" },
-    { name: "Add To-Do",     path: "/dashboard/todo/add" },
+    { name: "Add To-Do", path: "/dashboard/todo/add" },
   ],
   timesheet: [
-    { name: "View Timesheet",     path: "/dashboard/timesheet" },
+    { name: "View Timesheet", path: "/dashboard/timesheet" },
     { name: "Timesheet Approval", path: "/dashboard/timesheet/timesheetapproval" },
-    { name: "Edit Request",       path: "/dashboard/timesheet/edit-request" },
-    { name: "Client Approval",    path: "/dashboard/timesheet/clienttimesheet" },
+    { name: "Timesheet Edit Request", path: "/dashboard/timesheet/edit-request" },
+    { name: "Client Timesheet List", path: "/dashboard/timesheet/clienttimesheet" },
   ],
   "final-resource": [
-    { name: "Resource List", path: "/dashboard/final-resource" },
-    { name: "Add Resource",  path: "/dashboard/final-resource/add" },
+    { name: "Final Source List", path: "/dashboard/final-resource" },
+    { name: "Add Final Source", path: "/dashboard/final-resource/add" },
   ],
-  settings : [
-    {name : "Employee basic details", path : "/dashboard/settings"},
-    {name : "Qualification", path : "/dashboard/qualification"},
-    {name : "Personal", path : "/dashboard/personal"},
-    {name : "Address", path : "/dashboard/address"},
-    {name : "Account Settings", path : "/dashboard/account-settings"},
-  ]
+  settings: [
+    { name: "Employee basic details", path: "/dashboard/settings" },
+    { name: "Qualification", path: "/dashboard/qualification" },
+    { name: "Personal", path: "/dashboard/personal" },
+    { name: "Address", path: "/dashboard/address" },
+    { name: "Account Settings", path: "/dashboard/account-settings" },
+  ],
 };
 
-/* Page titles map — shown in the topbar */
 const pageTitles = {
-  dashboard:        { title: "Dashboard",  sub: "Welcome back" },
-  tasks:            { title: "Tasks",      sub: "Manage your work" },
-  todo:             { title: "To-Do",      sub: "Your personal checklist" },
-  rfp:              { title: "RFP",        sub: "Requests for proposal" },
-  projects:         { title: "Projects",   sub: "All active projects" },
-  timesheet:        { title: "Timesheet",  sub: "Track your hours" },
-  qa:               { title: "QA",         sub: "Quality assurance" },
-  "final-resource": { title: "Resources",  sub: "Team & resource directory" },
+  dashboard: { title: "Dashboard", sub: "Welcome back" },
+  tasks: { title: "Tasks", sub: "Manage your work" },
+  todo: { title: "To-Do", sub: "Your personal checklist" },
+  rfp: { title: "RFP", sub: "Requests for proposal" },
+  projects: { title: "Projects", sub: "All active projects" },
+  timesheet: { title: "Timesheet", sub: "Track your hours" },
+  qa: { title: "QA", sub: "Quality assurance" },
+  "final-resource": { title: "Resources", sub: "Team & resource directory" },
+  settings: { title: "Settings", sub: "Manage employee profile" },
+  qualification: { title: "Settings", sub: "Manage employee qualification" },
+  personal: { title: "Settings", sub: "Manage personal details" },
+  address: { title: "Settings", sub: "Manage address details" },
+  "account-settings": { title: "Settings", sub: "Manage account settings" },
 };
+
+const settingsRoutes = [
+  "settings",
+  "qualification",
+  "personal",
+  "address",
+  "account-settings",
+];
 
 function Topbar() {
   const location = useLocation();
-  const segment  = location.pathname.split("/")[2] || "dashboard";
-  const page     = pageTitles[segment] || { title: segment, sub: "" };
+  const segment = location.pathname.split("/")[2] || "dashboard";
+  const page = pageTitles[segment] || { title: segment, sub: "" };
 
   return (
     <div className="ci-topbar">
@@ -60,27 +72,30 @@ function Topbar() {
           padding: 0 28px;
           height: 58px;
           background: #ffffff;
-           border-bottom: 1px solid #f8fafc;
+          border-bottom: 1px solid #f8fafc;
           flex-shrink: 0;
           font-family: 'DM Sans', sans-serif;
         }
-        .ci-topbar-left {}
+
         .ci-topbar-title {
           font-size: 17px;
           font-weight: 700;
           color: #0f172a;
           line-height: 1;
         }
+
         .ci-topbar-sub {
           font-size: 12px;
           color: #94a3b8;
           margin-top: 3px;
         }
+
         .ci-topbar-right {
           display: flex;
           align-items: center;
           gap: 10px;
         }
+
         .ci-topbar-pill {
           display: inline-flex;
           align-items: center;
@@ -93,24 +108,49 @@ function Topbar() {
           border-radius: 20px;
           padding: 4px 12px;
         }
+
         .ci-topbar-date {
           font-size: 12px;
           color: #94a3b8;
         }
+
+        @media (max-width: 640px) {
+          .ci-topbar {
+            padding: 0 16px;
+          }
+
+          .ci-topbar-date {
+            display: none;
+          }
+        }
       `}</style>
 
-      <div className="ci-topbar-left">
+      <div>
         <div className="ci-topbar-title">{page.title}</div>
         <div className="ci-topbar-sub">{page.sub}</div>
       </div>
 
       <div className="ci-topbar-right">
         <span className="ci-topbar-pill">
-          <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#22c55e", display: "inline-block" }} />
+          <span
+            style={{
+              width: 6,
+              height: 6,
+              borderRadius: "50%",
+              background: "#22c55e",
+              display: "inline-block",
+            }}
+          />
           Internal Portal
         </span>
+
         <span className="ci-topbar-date">
-          {new Date().toLocaleDateString("en-GB", { weekday: "short", day: "numeric", month: "short", year: "numeric" })}
+          {new Date().toLocaleDateString("en-GB", {
+            weekday: "short",
+            day: "numeric",
+            month: "short",
+            year: "numeric",
+          })}
         </span>
       </div>
     </div>
@@ -118,9 +158,11 @@ function Topbar() {
 }
 
 function SubNavbar() {
-  const location   = useLocation();
-  const currentPage = location.pathname.split("/")[2];
-  const tabs        = subNavItems[currentPage];
+  const location = useLocation();
+  const segment = location.pathname.split("/")[2];
+
+  const currentPage = settingsRoutes.includes(segment) ? "settings" : segment;
+  const tabs = subNavItems[currentPage];
 
   if (!tabs) return null;
 
@@ -131,6 +173,7 @@ function SubNavbar() {
           padding: 16px 24px 0;
           font-family: 'DM Sans', sans-serif;
         }
+
         .ci-subnav {
           display: flex;
           align-items: center;
@@ -142,7 +185,10 @@ function SubNavbar() {
           overflow-x: auto;
           scrollbar-width: none;
         }
-        .ci-subnav::-webkit-scrollbar { display: none; }
+
+        .ci-subnav::-webkit-scrollbar {
+          display: none;
+        }
 
         .ci-tab {
           display: inline-flex;
@@ -156,15 +202,28 @@ function SubNavbar() {
           transition: background 0.15s, color 0.15s, box-shadow 0.15s;
           color: #64748b;
         }
+
         .ci-tab:hover {
           background: #ffffff;
           color: #0f172a;
         }
+
         .ci-tab.active {
           background: #ffffff;
           color: #0f172a;
           box-shadow: 0 1px 3px rgba(0,0,0,0.08), 0 0 0 1px rgba(0,0,0,0.06);
           font-weight: 600;
+        }
+
+        @media (max-width: 640px) {
+          .ci-subnav-wrap {
+            padding: 12px 16px 0;
+          }
+
+          .ci-tab {
+            padding: 7px 12px;
+            font-size: 12px;
+          }
         }
       `}</style>
 
@@ -190,59 +249,67 @@ function DashboardLayout() {
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap');
 
-        *, *::before, *::after { box-sizing: border-box; }
+        *, *::before, *::after {
+          box-sizing: border-box;
+        }
 
-       .ci-layout {
-  height: 100vh;
-  overflow: hidden;
-  background: #f8fafc;
-  display: flex;
-  font-family: 'DM Sans', sans-serif;
-}
+        .ci-layout {
+          height: 100vh;
+          overflow: hidden;
+          background: #f8fafc;
+          display: flex;
+          font-family: 'DM Sans', sans-serif;
+        }
 
-.ci-sidebar {
-  height: 100vh;
-  position: sticky;
-  top: 0;
-  flex-shrink: 0;
-}
+        .ci-sidebar {
+          height: 100vh;
+          position: sticky;
+          top: 0;
+          flex-shrink: 0;
+        }
 
-.ci-main-area {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  height: 100vh;
-  min-width: 0;
-  overflow: hidden;
-}
+        .ci-main-area {
+          flex: 1;
+          display: flex;
+          flex-direction: column;
+          height: 100vh;
+          min-width: 0;
+          overflow: hidden;
+        }
 
-.ci-page-content {
-  flex: 1;
-  padding: 24px;
-  overflow-y: auto;
-  overflow-x: hidden;
+        .ci-page-content {
+          flex: 1;
+          padding: 24px;
+          overflow-y: auto;
+          overflow-x: hidden;
+          scrollbar-width: thin;
+          scrollbar-color: #CBD5E1 transparent;
+        }
 
-  scrollbar-width: thin;
-  scrollbar-color: #CBD5E1 transparent;
-}
+        .ci-page-content::-webkit-scrollbar {
+          width: 8px;
+        }
 
-.ci-page-content::-webkit-scrollbar {
-  width: 8px;
-}
+        .ci-page-content::-webkit-scrollbar-thumb {
+          background: #CBD5E1;
+          border-radius: 999px;
+        }
 
-.ci-page-content::-webkit-scrollbar-thumb {
-  background: #CBD5E1;
-  border-radius: 999px;
-}
+        .ci-page-content::-webkit-scrollbar-thumb:hover {
+          background: #94A3B8;
+        }
 
-.ci-page-content::-webkit-scrollbar-thumb:hover {
-  background: #94A3B8;
-}
-  .ci-content-container {
-  width: 100%;
-  max-width: 1480px;
-  margin: 0 auto;
-}
+        .ci-content-container {
+          width: 100%;
+          max-width: 1480px;
+          margin: 0 auto;
+        }
+
+        @media (max-width: 640px) {
+          .ci-page-content {
+            padding: 16px;
+          }
+        }
       `}</style>
 
       <Sidebar />
@@ -250,11 +317,13 @@ function DashboardLayout() {
       <div className="ci-main-area">
         <Topbar />
         <SubNavbar />
-       <main className="ci-page-content">
-  <div className="ci-content-container">
-    <Outlet />
-  </div>
-</main>
+
+        <main className="ci-page-content">
+          <div className="ci-content-container">
+            <Outlet />
+          </div>
+        </main>
+
         <Footer />
       </div>
     </div>

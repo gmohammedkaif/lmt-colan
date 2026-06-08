@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import {
   FiClock,
   FiCheckSquare,
@@ -14,123 +14,111 @@ import {
   FiUsers,
   FiSearch,
   FiSun,
-  FiTrendingUp,
-  FiActivity,
-  FiClipboard,
+  FiSettings,
 } from "react-icons/fi";
-
 import colanLogo from "../assets/colonLogo.webp";
 
 const modules = [
   {
     title: "Dashboard",
-    text: "Daily summary, pending work, and productivity overview.",
+    subtitle: "Business Overview",
+    text: "View daily summaries, pending work, and your full productivity overview at a glance.",
     icon: FiBarChart2,
     path: "/dashboard",
     accent: "#2563EB",
-    bg: "#EFF6FF",
-    tag: "Overview",
+    iconBg: "#EFF6FF",
+    iconColor: "#2563EB",
   },
-  {
+    {
     title: "Tasks",
-    text: "Manage assigned tasks and track work progress.",
+    subtitle: "Task Tracking System",
+    text: "Create, assign and manage daily tasks with progress tracking and team coordination.",
     icon: FiList,
     path: "/dashboard/tasks",
-    accent: "#7C3AED",
-    bg: "#F5F3FF",
-    tag: "Work",
+    accent: "#EA580C",
+    iconBg: "#FFF7ED",
+    iconColor: "#EA580C",
   },
-  {
+   {
     title: "To-Do",
-    text: "Organize and manage your personal task list.",
+    subtitle: "Personal Task Board",
+    text: "Organize and manage your personal task list with priorities, reminders, and completion tracking.",
     icon: FiCheckSquare,
     path: "/dashboard/todo",
     accent: "#059669",
-    bg: "#ECFDF5",
-    tag: "Personal",
+    iconBg: "#ECFDF5",
+    iconColor: "#059669",
   },
   {
     title: "RFP Estimation",
-    text: "Prepare proposals and resource estimations.",
+    subtitle: "Proposal & Costing",
+    text: "Prepare accurate project estimations, proposals and resource planning for client requirements.",
     icon: FiFileText,
     path: "/dashboard/rfp",
-    accent: "#EA580C",
-    bg: "#FFF7ED",
-    tag: "Proposals",
+    accent: "#DC2626",
+    iconBg: "#FEF2F2",
+    iconColor: "#DC2626",
   },
   {
     title: "Projects",
-    text: "Track project milestones and active progress.",
+    subtitle: "Project Management",
+    text: "Monitor ongoing projects, manage workflows and collaborate with teams in one workspace.",
     icon: FiFolder,
     path: "/dashboard/projects",
-    accent: "#D97706",
-    bg: "#FFFBEB",
-    tag: "Projects",
+    accent: "#0891B2",
+    iconBg: "#ECFEFF",
+    iconColor: "#0891B2",
   },
+
   {
     title: "Timesheet",
-    text: "Submit work logs and monitor tracked hours.",
+    subtitle: "Work Hour Management",
+    text: "Log working hours, manage employee timesheets and track productivity effectively.",
     icon: FiClock,
     path: "/dashboard/timesheet",
     accent: "#0284C7",
-    bg: "#F0F9FF",
-    tag: "Tracking",
+    iconBg: "#F0F9FF",
+    iconColor: "#0284C7",
   },
-  // {
-  //   title: "Calendar",
-  //   text: "Manage schedules and upcoming deadlines.",
-  //   icon: FiCalendar,
-  //   path: "/dashboard/tasks/calendar",
-  //   accent: "#DB2777",
-  //   bg: "#FDF2F8",
-  //   tag: "Schedule",
-  // },
-  {
-    title: "QA",
-    text: "Track testing cycles and software quality.",
+    {
+    title: "Quality Assurance",
+    subtitle: "Testing & Validation",
+    text: "Ensure software quality through systematic testing, issue tracking and compliance validation.",
     icon: FiSearch,
     path: "/dashboard/qa",
-    accent: "#0891B2",
-    bg: "#ECFEFF",
-    tag: "Testing",
+    accent: "#7C3AED",
+    iconBg: "#F5F3FF",
+    iconColor: "#7C3AED",
   },
-  // {
-  //   title: "RFP Estimation",
-  //   text: "Prepare proposals and resource estimations.",
-  //   icon: FiFileText,
-  //   path: "/dashboard/rfp",
-  //   accent: "#EA580C",
-  //   bg: "#FFF7ED",
-  //   tag: "Proposals",
-  // },
+   
   {
     title: "Final Resource",
-    text: "Manage resource allocation and utilization.",
+    subtitle: "Source & Delivery Hub",
+    text: "Centralize, manage and track all finalized project sources and delivery files efficiently.",
     icon: FiUsers,
     path: "/dashboard/final-resource",
     accent: "#4F46E5",
-    bg: "#EEF2FF",
-    tag: "Team",
+    iconBg: "#EEF2FF",
+    iconColor: "#4F46E5",
   },
   {
-    title: "Calendar",
-    text: "Manage schedules and upcoming deadlines.",
-    icon: FiCalendar,
-    path: "/dashboard/tasks/calendar",
+    title: "settings",
+    subtitle: "Account & Preferences",
+    text: "Manage your account settings, notification preferences and security options.",
+    icon: FiSettings,
+    path: "/dashboard/settings",
     accent: "#DB2777",
-    bg: "#FDF2F8",
-    tag: "Schedule",
-  }
+    iconBg: "#FDF2F8",
+    iconColor: "#DB2777",
+  },
 ];
 
 function Modules() {
   const navigate = useNavigate();
-
-  const email =
-    localStorage.getItem("userEmail") || "employee@colan.com";
-
-  const name = email.split("@")[0];
-  const initials = name.slice(0, 2).toUpperCase();
+  const email = localStorage.getItem("userEmail") || "employee@colan.com";
+  const rawName = email.split("@")[0];
+  const displayName = rawName.charAt(0).toUpperCase() + rawName.slice(1).toLowerCase();
+  const initials = rawName.slice(0, 2).toUpperCase();
 
   const today = new Date().toLocaleDateString("en-US", {
     weekday: "long",
@@ -138,460 +126,411 @@ function Modules() {
     day: "numeric",
   });
 
-  const [hovered, setHovered] = useState(null);
-
   const handleLogout = () => {
     localStorage.removeItem("isLoggedIn");
     localStorage.removeItem("userEmail");
     navigate("/");
   };
 
+  // UI state
+  const [query, setQuery] = useState("");
+
+  // Filtered modules memoized for performance
+  const filtered = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    if (!q) return modules;
+    return modules.filter((m) => (
+      m.title.toLowerCase().includes(q) ||
+      m.subtitle.toLowerCase().includes(q) ||
+      m.text.toLowerCase().includes(q)
+    ));
+  }, [query]);
+
+  const handleOpenModule = (mod) => {
+    // analytics stub - replace with real tracking integration
+    try { console.debug("open_module", { module: mod.title, path: mod.path }); } catch (e) {}
+    navigate(mod.path);
+  };
+
   return (
-    <div
-      className="min-h-screen bg-[#F8FAFC]"
-      style={{
-        fontFamily: "Inter, sans-serif",
-      }}
-    >
-      {/* GLOBAL STYLES */}
-      <style>
-        {`
-          @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+    <div style={{ minHeight: "100vh", background: "#F0F4FF", fontFamily: "'DM Sans', sans-serif" }}>
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;0,9..40,800;1,9..40,400&display=swap');
 
-          .module-card {
-            transition:
-              transform 0.2s ease,
-              border-color 0.2s ease,
-              box-shadow 0.2s ease;
-          }
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-          .module-card:hover {
-            transform: translateY(-2px);
-            border-color: #CBD5E1;
-            box-shadow: 0 10px 24px rgba(15,23,42,0.06);
-          }
+        /* ── HEADER ── */
+        .hdr {
+          position: sticky; top: 0; z-index: 100;
+          background: rgba(255,255,255,0.97);
+          backdrop-filter: blur(16px);
+          border-bottom: 1px solid #E8EDF5;
+          box-shadow: 0 1px 4px rgba(15,23,42,0.05);
+        }
+        .hdr-inner {
+          max-width: 1400px; margin: 0 auto;
+          height: 64px; padding: 0 32px;
+          display: flex; align-items: center; justify-content: space-between;
+        }
 
-          .fade-in {
-            animation: fadeIn 0.45s ease both;
-          }
+        /* ── NOTIF BTN ── */
+        .notif-btn {
+          position: relative;
+          width: 38px; height: 38px; border-radius: 10px;
+          border: 1px solid #E8EDF5; background: transparent;
+          display: flex; align-items: center; justify-content: center;
+          cursor: pointer; transition: all 0.16s ease;
+        }
+        .notif-btn:hover { background: #F1F5FF; border-color: #C7D2FE; }
 
-          @keyframes fadeIn {
-            from {
-              opacity: 0;
-              transform: translateY(10px);
-            }
-            to {
-              opacity: 1;
-              transform: none;
-            }
-          }
+        /* ── AVATAR ── */
+        .avatar {
+          width: 36px; height: 36px; border-radius: 10px;
+          background: linear-gradient(135deg, #2563EB 0%, #4F46E5 100%);
+          display: flex; align-items: center; justify-content: center;
+          font-size: 13px; font-weight: 700; color: #fff;
+          flex-shrink: 0;
+          box-shadow: 0 3px 10px rgba(37,99,235,0.28);
+        }
 
-          .nav-btn:hover {
-            background: #F1F5F9;
-          }
+        /* ── LOGOUT ── */
+        .logout-btn {
+          height: 36px; padding: 0 14px; border-radius: 9px;
+          border: 1px solid #FECACA; background: #FFF5F5;
+          color: #DC2626;
+          display: flex; align-items: center; gap: 6px;
+          font-size: 13px; font-weight: 600; cursor: pointer;
+          font-family: 'DM Sans', sans-serif;
+          transition: all 0.16s;
+        }
+        .logout-btn:hover { background: #FEE2E2; border-color: #FCA5A5; }
 
-          .logout-btn:hover {
-            background: #FEF2F2;
-          }
-        `}
-      </style>
+        /* ── HERO ── */
+        .hero {
+          position: relative; overflow: hidden;
+          background: linear-gradient(135deg, #EEF2FF 0%, #E8F0FE 45%, #EAF9FF 100%);
+          border-bottom: 1px solid #DDE5F6;
+          padding: 40px 32px 44px;
+        }
 
-      {/* HEADER */}
-     <header
-  style={{
-    position: "sticky",
-    top: 0,
-    zIndex: 50,
-    background: "#FFFFFF",
-    borderBottom: "1px solid #F1F5F9",
-  }}
->
-  <div
-    style={{
-      maxWidth: "1440px",
-      margin: "0 auto",
-      height: "68px",
-      padding: "0 36px",
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "space-between",
-    }}
-  >
-    {/* LEFT SECTION */}
-    <div className="flex items-center">
-      {/* LOGO */}
-      <div className="flex items-center gap-3">
-        <div
-          className="flex items-center justify-center"
-          style={{
-            width: "40px",
-            height: "40px",
-            borderRadius: "12px",
-            border: "1px solid #EDF2F7",
-            background: "#FFFFFF",
-          }}
-        >
-          <img
-            src={colanLogo}
-            alt="logo"
-            className="w-7 h-7 object-contain"
-          />
+        /* wave SVG */
+        .hero-wave {
+          position: absolute; top: 0; right: 0;
+          width: 55%; height: 100%;
+          pointer-events: none; z-index: 0;
+        }
+
+        /* glow blobs */
+        .glow-1 {
+          position: absolute; top: -80px; right: 5%;
+          width: 320px; height: 320px; border-radius: 50%;
+          background: radial-gradient(circle, rgba(196,210,255,0.5) 0%, transparent 68%);
+          pointer-events: none;
+        }
+        .glow-2 {
+          position: absolute; bottom: -60px; left: 28%;
+          width: 220px; height: 220px; border-radius: 50%;
+          background: radial-gradient(circle, rgba(147,234,252,0.28) 0%, transparent 65%);
+          pointer-events: none;
+        }
+
+        /* floating emoji cards */
+        .float-card {
+          background: #fff;
+          border: 1.5px solid #E8EDF5;
+          border-radius: 16px;
+          display: flex; align-items: center; justify-content: center;
+          box-shadow: 0 6px 20px rgba(15,23,42,0.09);
+          position: absolute;
+        }
+
+        /* Workspace pill */
+        .ws-pill {
+          display: inline-flex; align-items: center; gap: 7px;
+          padding: 5px 14px; border-radius: 100px;
+          background: rgba(255,255,255,0.75);
+          border: 1px solid #C7D2FE;
+          font-size: 11px; font-weight: 700; color: #2563EB;
+          letter-spacing: 0.09em; text-transform: uppercase;
+          margin-bottom: 16px;
+        }
+        .ws-pill-dot {
+          width: 6px; height: 6px; border-radius: 50%;
+          background: #2563EB;
+          animation: pDot 2s ease infinite;
+        }
+        @keyframes pDot {
+          0%, 100% { opacity: 1; }
+          50% { opacity: 0.4; }
+        }
+
+        /* ── CARDS ── */
+        .cards-grid {
+          display: grid;
+          grid-template-columns: repeat(3, 1fr);
+          gap: 18px;
+        }
+        @media (max-width: 1100px) { .cards-grid { grid-template-columns: repeat(2,1fr); } }
+        @media (max-width: 640px)  { .cards-grid { grid-template-columns: 1fr; } }
+
+        .mod-card {
+          background: #ffffff;
+          border-radius: 16px;
+          border: 1px solid #E4E9F4;
+          padding: 22px 24px 20px;
+          cursor: pointer; text-align: left; width: 100%;
+          display: flex; flex-direction: column;
+          box-shadow: 0 1px 3px rgba(15,23,42,0.04);
+          transition:
+            transform 0.22s cubic-bezier(0.34,1.35,0.64,1),
+            box-shadow 0.22s ease,
+            border-color 0.22s ease;
+          opacity: 0;
+          transform: translateY(16px);
+          animation: cardIn 0.45s cubic-bezier(0.34,1.2,0.64,1) forwards;
+        }
+        @keyframes cardIn { to { opacity: 1; transform: translateY(0); } }
+
+        .mod-card:hover {
+          transform: translateY(-5px);
+          box-shadow: 0 10px 32px -4px rgba(15,23,42,0.11), 0 4px 10px -2px rgba(15,23,42,0.06);
+          border-color: #C7D2FE;
+        }
+
+        .card-icon {
+          width: 46px; height: 46px; border-radius: 12px;
+          display: flex; align-items: center; justify-content: center;
+          flex-shrink: 0;
+          transition: transform 0.22s cubic-bezier(0.34,1.4,0.64,1);
+        }
+        .mod-card:hover .card-icon { transform: scale(1.08) rotate(-3deg); }
+
+        .card-divider {
+          height: 1px; background: #F1F5F9; margin-bottom: 14px;
+          transition: background 0.2s;
+        }
+        .mod-card:hover .card-divider { background: #DBEAFE; }
+
+        .open-label {
+          font-size: 13px; font-weight: 700;
+          display: flex; align-items: center; gap: 6px;
+          transition: gap 0.18s ease;
+        }
+        .mod-card:hover .open-label { gap: 10px; }
+
+        .open-arrow {
+          transition: transform 0.2s cubic-bezier(0.34,1.4,0.64,1);
+        }
+        .mod-card:hover .open-arrow { transform: translateX(4px); }
+      `}</style>
+
+      {/* ─── HEADER ─── */}
+      <header className="hdr">
+        <div className="hdr-inner">
+
+          {/* LEFT: Logo + divider + date */}
+          <div style={{ display: "flex", alignItems: "center", gap: 0 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+              <img src={colanLogo} alt="logo" style={{ width: 36, height: 36, objectFit: "contain" }} />
+              <div>
+                <div style={{ fontSize: 13, fontWeight: 700, color: "#0F172A", lineHeight: 1.2, letterSpacing: "0.02em" }}>
+                  COLAN INFOTECH
+                </div>
+                <div style={{ fontSize: 11, color: "#94A3B8", fontWeight: 500 }}>
+                  Timesheet Workspace
+                </div>
+              </div>
+            </div>
+
+            {/* divider */}
+            <div style={{ width: 1, height: 22, background: "#E8EDF5", margin: "0 20px" }} />
+
+            {/* date */}
+            <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+              <FiSun size={13} style={{ color: "#F59E0B" }} />
+              <span style={{ fontSize: 13, color: "#64748B", fontWeight: 500 }}>{today}</span>
+            </div>
+          </div>
+
+          {/* RIGHT: bell + user + logout */}
+          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+            <button className="notif-btn">
+              <FiBell size={16} style={{ color: "#64748B" }} />
+            </button>
+
+            {/* user info */}
+            <div style={{ display: "flex", alignItems: "center", gap: 9 }}>
+              <div className="avatar">{initials}</div>
+              <div>
+                <div style={{ fontSize: 13, fontWeight: 700, color: "#0F172A", textTransform: "capitalize", lineHeight: 1.2 }}>
+                  {displayName}
+                </div>
+                <div style={{ fontSize: 11, color: "#94A3B8", fontWeight: 500 }}>{email}</div>
+              </div>
+            </div>
+
+            <button className="logout-btn" onClick={handleLogout}>
+              <FiLogOut size={13} />
+              Logout
+            </button>
+          </div>
         </div>
+      </header>
 
-        <div>
-          <h2
-            style={{
-              fontSize: "13px",
-              fontWeight: 700,
-              color: "#0F172A",
-              lineHeight: 1.15,
-              letterSpacing: "0.04em",
-            }}
-          >
-            COLAN INFOTECH
-          </h2>
+      {/* ─── HERO ─── */}
+      <div className="hero">
+        <div className="glow-1" />
+        <div className="glow-2" />
 
-          <p
-            style={{
-              fontSize: "10px",
-              color: "#94A3B8",
-              fontWeight: 500,
-              letterSpacing: "0.08em",
-            }}
-          >
-            Timesheet Workspace
-          </p>
-        </div>
-      </div>
-
-      {/* DIVIDER */}
-      <div
-        style={{
-          width: "1px",
-          height: "24px",
-          background: "#EDF2F7",
-          marginLeft: "28px",
-          marginRight: "28px",
-        }}
-      />
-
-      {/* DATE */}
-      <div className="flex items-center gap-2">
-        <FiSun
-          size={13}
-          style={{
-            color: "#F59E0B",
-          }}
-        />
-
-        <p
-          style={{
-            fontSize: "12px",
-            color: "#64748B",
-            fontWeight: 500,
-          }}
-        >
-          {today}
-        </p>
-      </div>
-    </div>
-
-    {/* RIGHT SECTION */}
-    <div className="flex items-center gap-4">
-      {/* NOTIFICATION */}
-      <button
-        className="nav-btn transition-colors"
-        style={{
-          width: "38px",
-          height: "38px",
-          borderRadius: "10px",
-          border: "none",
-          background: "transparent",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          cursor: "pointer",
-        }}
-      >
-        <FiBell
-          size={17}
-          style={{
-            color: "#64748B",
-          }}
-        />
-      </button>
-
-      {/* DIVIDER */}
-      <div
-        style={{
-          width: "1px",
-          height: "22px",
-          background: "#EDF2F7",
-        }}
-      />
-
-      {/* USER PROFILE */}
-      <div className="flex items-center gap-3">
-        {/* AVATAR */}
-        <div
-          className="flex items-center justify-center"
-          style={{
-            width: "38px",
-            height: "38px",
-            borderRadius: "12px",
-            background: "#DBEAFE",
-            color: "#1D4ED8",
-            fontSize: "13px",
-            fontWeight: 700,
-            flexShrink: 0,
-          }}
-        >
-          {initials}
-        </div>
-
-        {/* USER INFO */}
-        <div className="hidden sm:block">
-          <h4
-            style={{
-              fontSize: "12px",
-              fontWeight: 700,
-              color: "#0F172A",
-              lineHeight: 1.2,
-              textTransform: "capitalize",
-              marginBottom: "2px",
-            }}
-          >
-            {name}
-          </h4>
-
-          <p
-            style={{
-              fontSize: "9px",
-              color: "#94A3B8",
-              fontWeight: 500,
-              opacity: 0.8,
-            }}
-          >
-            {email}
-          </p>
-        </div>
-      </div>
-
-      {/* LOGOUT */}
-      <button
-        onClick={handleLogout}
-        className="logout-btn transition-all"
-        style={{
-          height: "38px",
-          padding: "0 16px",
-          borderRadius: "10px",
-          border: "1px solid #FEE2E2",
-          background: "#FFFFFF",
-          color: "#DC2626",
-          display: "flex",
-          alignItems: "center",
-          gap: "7px",
-          fontSize: "13px",
-          fontWeight: 600,
-          cursor: "pointer",
-        }}
-      >
-        <FiLogOut size={14} />
-        Logout
-      </button>
-    </div>
-  </div>
-</header>
-
-      {/* HERO */}
-     
-     <div className="relative overflow-hidden border-b border-slate-100 bg-[#f7f9ff] px-8 py-12">
-  
-  {/* Dot Pattern */}
-  <div
-    className="absolute inset-0 opacity-[0.05]"
-    style={{
-      backgroundImage:
-        "radial-gradient(circle, #64748b 1px, transparent 1px)",
-      backgroundSize: "24px 24px",
-    }}
-  />
-
-        {/* Glow Effects */}
-        <div className="absolute top-[-120px] right-[-80px] w-[320px] h-[320px] bg-blue-100 rounded-full blur-3xl opacity-40" />
-        <div className="absolute bottom-[-120px] left-[20%] w-[240px] h-[240px] bg-indigo-100 rounded-full blur-3xl opacity-30" />
-
-        {/* Wave SVG */}
-        <div className="absolute top-0 right-0 w-[45%] h-full opacity-60 pointer-events-none">
-          <svg
-            viewBox="0 0 600 300"
-            className="w-full h-full"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
+        {/* Wave SVG — right background */}
+        <div className="hero-wave">
+          <svg viewBox="0 0 700 300" fill="none" xmlns="http://www.w3.org/2000/svg"
+            style={{ width: "100%", height: "100%" }}>
             <path
-              d="M0 150C80 80 140 220 220 150C300 80 360 220 440 150C520 80 560 180 600 120"
-              stroke="#c7d2fe"
-              strokeWidth="3"
-              strokeLinecap="round"
-            />
+              d="M0 160 C80 100 150 210 240 155 C330 100 390 200 480 148 C550 108 610 170 700 130"
+              stroke="#C7D2FE" strokeWidth="2.5" strokeLinecap="round" fill="none" />
             <path
-              d="M0 190C90 120 160 250 240 180C320 110 390 240 470 170C540 110 580 210 600 170"
-              stroke="#dbeafe"
-              strokeWidth="2"
-              strokeLinecap="round"
-            />
+              d="M0 195 C90 140 170 230 260 180 C350 130 420 220 510 168 C575 128 630 185 700 155"
+              stroke="#BAE6FD" strokeWidth="1.8" strokeLinecap="round" fill="none" opacity="0.7" />
+            <path
+              d="M0 230 C100 180 190 255 280 210 C370 165 450 240 540 195 C600 165 650 205 700 185"
+              stroke="#DDD6FE" strokeWidth="1.2" strokeLinecap="round" fill="none" opacity="0.5" />
           </svg>
         </div>
 
-        {/* Floating Icons */}
-        <div className="absolute right-20 top-10 hidden lg:flex items-center gap-4">
-          <div className="w-14 h-14 rounded-2xl bg-white shadow-lg border border-slate-100 flex items-center justify-center rotate-[-6deg]">
-            <span className="text-2xl">📊</span>
+        {/* Floating emoji cards */}
+        <div className="float-card" style={{ width: 58, height: 58, top: 28, right: 340, fontSize: 26, transform: "rotate(-5deg)" }}>📊</div>
+        <div className="float-card" style={{ width: 50, height: 50, top: 70, right: 255, fontSize: 22, transform: "rotate(4deg)" }}>✅</div>
+        <div className="float-card" style={{ width: 50, height: 50, top: 18, right: 185, fontSize: 22, transform: "rotate(-3deg)" }}>📅</div>
+        <div className="float-card" style={{ width: 50, height: 50, top: 75, right: 110, fontSize: 22, transform: "rotate(6deg)" }}>📁</div>
+
+        {/* Content */}
+        <div style={{ maxWidth: 1400, margin: "0 auto", position: "relative", zIndex: 2 }}>
+          {/* Workspace pill */}
+          <div className="ws-pill">
+            <div className="ws-pill-dot" />
+            Workspace
           </div>
 
-          <div className="w-12 h-12 rounded-xl bg-white shadow-md border border-slate-100 flex items-center justify-center translate-y-10">
-            <span className="text-xl">✅</span>
-          </div>
-
-          <div className="w-12 h-12 rounded-xl bg-white shadow-md border border-slate-100 flex items-center justify-center -translate-y-4">
-            <span className="text-xl">📅</span>
-          </div>
-
-          <div className="w-12 h-12 rounded-xl bg-white shadow-md border border-slate-100 flex items-center justify-center translate-y-16">
-            <span className="text-xl">📁</span>
-          </div>
-        </div>
-
-        {/* Main Content */}
-        <div className="relative max-w-6xl mx-auto z-10">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-blue-50 border border-blue-100 mb-4">
-            <div className="w-2 h-2 rounded-full bg-blue-500 animate-pulse" />
-            <span className="text-xs font-semibold tracking-wider uppercase text-blue-700">
-              Workspace
-            </span>
-          </div>
-
-          <h2
-            className="text-4xl font-bold text-slate-900 leading-tight"
-            style={{ fontFamily: "'Syne', sans-serif" }}
-          >
+          {/* Heading */}
+          <h1 style={{
+            fontSize: "clamp(28px, 3.5vw, 42px)",
+            fontWeight: 800,
+            color: "#111827",
+            lineHeight: 1.1,
+            letterSpacing: "-0.025em",
+            marginBottom: 12,
+          }}>
             Choose your module
-          </h2>
+          </h1>
 
-          <p className="text-slate-500 text-base mt-3 max-w-md leading-relaxed">
-            Select a section to continue your daily workflow and manage
-            productivity efficiently.
+          {/* Subtitle */}
+          <p style={{
+            fontSize: 15,
+            color: "#64748B",
+            fontWeight: 400,
+            lineHeight: 1.65,
+            maxWidth: 620,
+            marginBottom: 12,
+          }}>
+            Select a section to continue your daily workflow and manage productivity efficiently.
           </p>
+
+          {/* Search / Filter */}
+          <div style={{ marginTop: 8, maxWidth: 520 }}>
+            <label htmlFor="module-search" style={{ position: "absolute", left: -10000, top: "auto", width: 1, height: 1, overflow: "hidden" }}>Search modules</label>
+            <div style={{ display: "flex", gap: 8 }}>
+              <div style={{ flex: 1, position: "relative" }}>
+                <input
+                  id="module-search"
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                  placeholder="Search modules, e.g. 'timesheet', 'tasks'"
+                  aria-label="Search modules"
+                  style={{
+                    width: "100%",
+                    padding: "10px 12px",
+                    borderRadius: 10,
+                    border: "1px solid #E6EEF8",
+                    background: "#fff",
+                    boxShadow: "inset 0 1px 0 rgba(15,23,42,0.02)",
+                    fontSize: 14,
+                    color: "#0F172A",
+                  }}
+                />
+              </div>
+              <div>
+                <button
+                  onClick={() => setQuery("")}
+                  className="logout-btn"
+                  aria-label="Clear search"
+                  style={{ height: 40 }}
+                >
+                  Clear
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
-      {/* MODULE GRID */}
-      <main
-        style={{
-          maxWidth: "1440px",
-          margin: "0 auto",
-          padding: "32px 28px 40px",
-        }}
-      >
-        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5">
-          {modules.map((mod, i) => {
-            const Icon = mod.icon;
+      {/* ─── GRID ─── */}
+      <main style={{ maxWidth: 1400, margin: "0 auto", padding: "32px 28px 56px" }}>
+        <div className="cards-grid" role="list" aria-label="Available modules">
+          {filtered.length === 0 && (
+            <div style={{ gridColumn: "1/-1", padding: 28, background: "#fff", borderRadius: 12, border: "1px solid #E6EEF8" }}>
+              <div style={{ fontSize: 16, fontWeight: 700, marginBottom: 6 }}>No modules found</div>
+              <div style={{ color: "#64748B" }}>Try a different search term or clear the filter.</div>
+            </div>
+          )}
 
+          {filtered.map((mod, i) => {
+            const Icon = mod.icon;
             return (
               <button
                 key={mod.title}
-                onClick={() => navigate(mod.path)}
-                onMouseEnter={() => setHovered(mod.title)}
-                onMouseLeave={() => setHovered(null)}
-                className="module-card fade-in group bg-white relative overflow-hidden text-left"
-                style={{
-                  borderRadius: "16px",
-                  border: "1px solid #E2E8F0",
-                  padding: "20px",
-                  animationDelay: `${i * 0.04}s`,
+                className="mod-card"
+                onClick={() => handleOpenModule(mod)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    handleOpenModule(mod);
+                  }
                 }}
+                style={{ animationDelay: `${i * 0.055}s` }}
+                role="listitem"
+                aria-label={`Open ${mod.title} module`}
               >
-                {/* LEFT ACCENT */}
-                <div
-                  className="absolute left-0 top-6 bottom-6 w-[3px] rounded-full transition-all duration-200"
-                  style={{
-                    background:
-                      hovered === mod.title
-                        ? mod.accent
-                        : "transparent",
-                  }}
-                />
-
-                {/* TOP */}
-                <div className="flex items-center justify-between mb-5">
-                  <span
-                    style={{
-                      background: mod.bg,
-                      color: mod.accent,
-                      fontSize: "10px",
-                      fontWeight: 700,
-                      textTransform: "uppercase",
-                      letterSpacing: "0.08em",
-                      padding: "6px 10px",
-                      borderRadius: "999px",
-                    }}
-                  >
-                    {mod.tag}
-                  </span>
-
-                  <FiArrowRight
-                    size={16}
-                    className="transition-all duration-200 group-hover:translate-x-1"
-                    style={{
-                      color:
-                        hovered === mod.title
-                          ? mod.accent
-                          : "#CBD5E1",
-                    }}
-                  />
+                {/* Icon + title row */}
+                <div style={{ display: "flex", alignItems: "center", gap: 14, marginBottom: 14 }}>
+                  <div className="card-icon" style={{ background: mod.iconBg }} aria-hidden>
+                    <Icon size={20} style={{ color: mod.iconColor }} />
+                  </div>
+                  <div>
+                    <div style={{ fontSize: 15, fontWeight: 700, color: "#111827", lineHeight: 1.25, marginBottom: 2 }}>
+                      {mod.title}
+                    </div>
+                    <div style={{ fontSize: 12, color: "#94A3B8", fontWeight: 500, lineHeight: 1.4 }}>
+                      {mod.subtitle}
+                    </div>
+                  </div>
                 </div>
 
-                {/* ICON */}
-                <div
-                  className="flex items-center justify-center mb-5"
-                  style={{
-                    width: "52px",
-                    height: "52px",
-                    borderRadius: "14px",
-                    background: mod.bg,
-                  }}
-                >
-                  <Icon
-                    size={22}
-                    style={{
-                      color: mod.accent,
-                    }}
-                  />
-                </div>
-
-                {/* TITLE */}
-                <h3
-                  style={{
-                    fontSize: "18px",
-                    fontWeight: 700,
-                    color: "#0F172A",
-                    marginBottom: "8px",
-                  }}
-                >
-                  {mod.title}
-                </h3>
-
-                {/* DESC */}
-                <p
-                  style={{
-                    fontSize: "14px",
-                    lineHeight: 1.75,
-                    color: "#64748B",
-                  }}
-                >
+                {/* Description */}
+                <p style={{ fontSize: 13.5, color: "#64748B", lineHeight: 1.7, fontWeight: 400, flex: 1, marginBottom: 16 }}>
                   {mod.text}
                 </p>
+
+                {/* Divider */}
+                <div className="card-divider" />
+
+                {/* Open Module */}
+                <div className="open-label" style={{ color: mod.accent }}>
+                  <span>Open Module</span>
+                  <span className="open-arrow">
+                    <FiArrowRight size={14} />
+                  </span>
+                </div>
               </button>
             );
           })}

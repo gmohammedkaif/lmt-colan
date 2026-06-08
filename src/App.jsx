@@ -24,6 +24,7 @@ import QualificationDetails from "./pages/dashboard/Qualification";
 import Qualification from "./pages/dashboard/Qualification";
 import Personal from "./pages/dashboard/Personal";
 import AddressCommDetails from "./pages/dashboard/Address";
+import AccountSettings from "./pages/dashboard/AccountSettings";
 
 function App() {
   return (
@@ -55,6 +56,7 @@ function App() {
   <Route path="qualification" element={<Qualification />} />
   <Route path="personal" element={<Personal />} />
   <Route path="address" element={<AddressCommDetails />} />
+  <Route path="account-settings" element={<AccountSettings />} />
       </Route>
     </Routes>
   );

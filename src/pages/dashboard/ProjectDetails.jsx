@@ -108,9 +108,9 @@ function ProjectDetails() {
             {project.status}
           </span>
 
-          <button className="h-11 px-5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold transition-all">
+          {/* <button className="h-11 px-5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold transition-all">
             Edit Project
-          </button>
+          </button> */}
         </div>
       </div>
 
