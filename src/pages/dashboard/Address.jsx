@@ -1,3 +1,4 @@
+import SideModal from "../../components/layout/ui/SideModal";
 import React, { useEffect, useState } from "react";
 import { Edit3, Mail, Smartphone, MapPin, Home, X, Save } from "lucide-react";
 
@@ -127,106 +128,90 @@ export default function AddressCommDetails() {
         </div>
       </div>
 
-      {openModal && (
-        <div className="fixed inset-0 z-50 flex justify-end bg-black/40 backdrop-blur-sm">
-          <div className="h-screen w-full max-w-3xl overflow-y-auto bg-white shadow-2xl">
-            <div className="sticky top-0 z-10 flex items-start justify-between border-b border-slate-200 bg-white px-6 py-5">
-              <div>
-                <h2 className="text-2xl font-bold text-slate-900">
-                  Edit Address & Communication
-                </h2>
-                <p className="mt-1 text-sm text-slate-500">
-                  Update contact details and address information
-                </p>
-              </div>
+     <SideModal
+  open={openModal}
+  title="Edit Address & Communication"
+  subtitle="Update contact details and address information"
+  onClose={() => setOpenModal(false)}
+  width="720px"
+>
+  <>
+    <div className="rounded-2xl border border-slate-200 bg-slate-50/60 overflow-hidden">
+      <div className="border-b border-slate-200 bg-white px-5 py-4">
+        <h3 className="font-bold text-slate-900">
+          Address & Communication Details
+        </h3>
+      </div>
 
-              <button
-                onClick={() => setOpenModal(false)}
-                className="flex h-10 w-10 items-center justify-center rounded-xl hover:bg-slate-100"
-              >
-                <X size={20} />
-              </button>
-            </div>
+      <div className="p-5 space-y-4">
+        <FormInput
+          label="Email"
+          required
+          value={formData.email}
+          onChange={(e) => handleChange("email", e.target.value)}
+        />
 
-            <div className="p-6">
-              <div className="rounded-2xl border border-slate-200 bg-slate-50/60 overflow-hidden">
-                <div className="border-b border-slate-200 bg-white px-5 py-4">
-                  <h3 className="font-bold text-slate-900">
-                    Address & Communication Details
-                  </h3>
-                </div>
+        <FormInput
+          label="Alternate Email"
+          value={formData.alternateEmail}
+          onChange={(e) =>
+            handleChange("alternateEmail", e.target.value)
+          }
+        />
 
-                <div className="p-5 space-y-4">
-                  <FormInput
-                    label="Email"
-                    required
-                    value={formData.email}
-                    onChange={(e) => handleChange("email", e.target.value)}
-                  />
+        <FormInput
+          label="Mobile"
+          required
+          value={formData.mobile}
+          onChange={(e) => handleChange("mobile", e.target.value)}
+        />
 
-                  <FormInput
-                    label="Alternate Email"
-                    value={formData.alternateEmail}
-                    onChange={(e) =>
-                      handleChange("alternateEmail", e.target.value)
-                    }
-                  />
+        <FormInput
+          label="Alternate Mobile"
+          value={formData.alternateMobile}
+          onChange={(e) =>
+            handleChange("alternateMobile", e.target.value)
+          }
+        />
 
-                  <FormInput
-                    label="Mobile"
-                    required
-                    value={formData.mobile}
-                    onChange={(e) => handleChange("mobile", e.target.value)}
-                  />
+        <FormTextarea
+          label="Permanent Address"
+          required
+          value={formData.permanentAddress}
+          onChange={(e) =>
+            handleChange("permanentAddress", e.target.value)
+          }
+        />
 
-                  <FormInput
-                    label="Alternate Mobile"
-                    value={formData.alternateMobile}
-                    onChange={(e) =>
-                      handleChange("alternateMobile", e.target.value)
-                    }
-                  />
+        <FormTextarea
+          label="Residential Address"
+          required
+          value={formData.residentialAddress}
+          onChange={(e) =>
+            handleChange("residentialAddress", e.target.value)
+          }
+        />
+      </div>
+    </div>
 
-                  <FormTextarea
-                    label="Permanent Address"
-                    required
-                    value={formData.permanentAddress}
-                    onChange={(e) =>
-                      handleChange("permanentAddress", e.target.value)
-                    }
-                  />
+    <div className="sticky bottom-0 flex justify-end gap-3 border-t border-slate-200 bg-white px-6 py-4">
+      <button
+        onClick={() => setOpenModal(false)}
+        className="rounded-xl border border-slate-200 px-5 py-3 text-sm font-semibold text-slate-600 hover:bg-slate-50"
+      >
+        Cancel
+      </button>
 
-                  <FormTextarea
-                    label="Residential Address"
-                    required
-                    value={formData.residentialAddress}
-                    onChange={(e) =>
-                      handleChange("residentialAddress", e.target.value)
-                    }
-                  />
-                </div>
-              </div>
-            </div>
-
-            <div className="sticky bottom-0 flex justify-end gap-3 border-t border-slate-200 bg-white px-6 py-4">
-              <button
-                onClick={() => setOpenModal(false)}
-                className="rounded-xl border border-slate-200 px-5 py-3 text-sm font-semibold text-slate-600 hover:bg-slate-50"
-              >
-                Cancel
-              </button>
-
-              <button
-                onClick={handleSave}
-                className="inline-flex items-center gap-2 rounded-xl bg-emerald-500 px-6 py-3 text-sm font-semibold text-white hover:bg-emerald-600"
-              >
-                <Save size={16} />
-                Update
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      <button
+        onClick={handleSave}
+        className="inline-flex items-center gap-2 rounded-xl bg-emerald-500 px-6 py-3 text-sm font-semibold text-white hover:bg-emerald-600"
+      >
+        <Save size={16} />
+        Update
+      </button>
+    </div>
+  </>
+</SideModal>
     </>
   );
 }

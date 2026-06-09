@@ -12,6 +12,7 @@ import {
   FiTrash2,
   FiAlertTriangle,
 } from "react-icons/fi";
+import SideModal from "../../components/layout/ui/SideModal";
 
 const STORAGE_KEY = "cipl_projects";
 
@@ -484,43 +485,24 @@ function Projects() {
         </div>
       )}
 
-      {openModal && (
-        <div className="fixed inset-0 z-50 bg-slate-950/30 backdrop-blur-sm">
-          <div className="drawer absolute inset-y-0 right-0 flex w-full max-w-[540px] flex-col bg-white shadow-2xl">
-            <div className="flex items-start justify-between border-b border-slate-100 px-6 py-6">
-              <div>
-                <h3 className="text-[26px] font-bold text-slate-900">
-                  {isEditMode ? "Edit Project" : "Create Project"}
-                </h3>
-
-                <p className="mt-1 text-sm text-slate-500">
-                  {isEditMode
-                    ? "Update project details and save changes."
-                    : "Add project details and assign workflow information."}
-                </p>
-              </div>
-
-              <button
-                onClick={closeModal}
-                className="flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 text-slate-500 transition-all hover:bg-slate-50"
-              >
-                <FiX size={18} />
-              </button>
-            </div>
-
-            <div className="flex items-center justify-between border-b border-slate-100 bg-slate-50 px-6 py-3">
+      <SideModal
+        open={openModal}
+        title={isEditMode ? "Edit Project" : "Create Project"}
+        subtitle={isEditMode ? "Update project details and save changes." : "Add project details and assign workflow information."}
+        onClose={closeModal}
+      >
+        <div className="flex flex-col gap-0">
+            <div className="flex items-center justify-between border-b border-slate-100 bg-slate-50 px-2 py-3 mb-4 rounded-xl">
               <div className="flex items-center gap-2">
                 <div className="h-2 w-2 rounded-full bg-emerald-500" />
-
                 <span className="text-xs font-medium text-slate-600">
                   {isEditMode ? "Editing existing project" : "New project draft"}
                 </span>
               </div>
-
               <span className="text-xs text-slate-400">Local storage</span>
             </div>
 
-            <div className="custom-scroll flex-1 overflow-y-auto px-6 py-6">
+            <div className="space-y-0">
               <SectionTitle title="Basic Information" />
 
               <div className="space-y-5">
@@ -670,8 +652,7 @@ function Projects() {
               </div>
             </div>
           </div>
-        </div>
-      )}
+        </SideModal>
 
       {deleteProject && (
         <div className="fixed inset-0 z-[60] flex items-center justify-center bg-slate-950/40 px-4 backdrop-blur-sm">

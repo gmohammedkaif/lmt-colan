@@ -1,3 +1,4 @@
+import SideModal from "../../components/layout/ui/SideModal";
 import React, { useEffect, useState } from "react";
 import {
   Edit3,
@@ -271,28 +272,16 @@ export default function QualificationDetails() {
         </div>
       </div>
 
-      {openModal && (
-        <div className="fixed inset-0 z-50 flex justify-end bg-black/40 backdrop-blur-sm">
-          <div className="h-screen w-full max-w-6xl overflow-y-auto bg-white shadow-2xl">
-            <div className="sticky top-0 z-10 flex items-start justify-between border-b border-slate-200 bg-white px-6 py-5">
-              <div>
-                <h2 className="text-2xl font-bold text-slate-900">
-                  Edit Qualification Details
-                </h2>
-                <p className="mt-1 text-sm text-slate-500">
-                  Add qualification, experience and updated CV details
-                </p>
-              </div>
-
-              <button
-                onClick={() => setOpenModal(false)}
-                className="flex h-10 w-10 items-center justify-center rounded-xl hover:bg-slate-100"
-              >
-                <X size={20} />
-              </button>
-            </div>
-
-            <div className="p-6 space-y-6">
+      <SideModal
+  open={openModal}
+  title="Edit Qualification Details"
+  subtitle="Add qualification, experience and updated CV details"
+  onClose={() => setOpenModal(false)}
+  width="900px"
+>
+  <>
+    <div className="space-y-6">
+        <div className="space-y-6">
               <div className="rounded-2xl border border-slate-200 bg-slate-50/60 overflow-hidden">
                 <div className="border-b border-slate-200 bg-white px-5 py-4">
                   <h3 className="font-bold text-slate-900">
@@ -492,7 +481,8 @@ export default function QualificationDetails() {
                           </td>
 
                           <td className="px-2 py-2">
-                            <textarea
+                            <input
+                              type="text"
                               rows={2}
                               value={item.tech}
                               onChange={(e) =>
@@ -629,27 +619,27 @@ export default function QualificationDetails() {
                   />
                 </label>
               </div>
-            </div>
+                </div>
+                </div>
 
-            <div className="sticky bottom-0 flex justify-end gap-3 border-t border-slate-200 bg-white px-6 py-4">
-              <button
-                onClick={() => setOpenModal(false)}
-                className="rounded-xl border border-slate-200 px-5 py-3 text-sm font-semibold text-slate-600 hover:bg-slate-50"
-              >
-                Cancel
-              </button>
+    <div className="sticky bottom-0 flex justify-end gap-3 border-t border-slate-200 bg-white px-6 py-4">
+      <button
+        onClick={() => setOpenModal(false)}
+        className="rounded-xl border border-slate-200 px-5 py-3 text-sm font-semibold text-slate-600 hover:bg-slate-50"
+      >
+        Cancel
+      </button>
 
-              <button
-                onClick={handleSave}
-                className="inline-flex items-center gap-2 rounded-xl bg-emerald-500 px-6 py-3 text-sm font-semibold text-white hover:bg-emerald-600"
-              >
-                <Save size={16} />
-                Save
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      <button
+        onClick={handleSave}
+        className="inline-flex items-center gap-2 rounded-xl bg-emerald-500 px-6 py-3 text-sm font-semibold text-white hover:bg-emerald-600"
+      >
+        <Save size={16} />
+        Save
+      </button>
+    </div>
+  </>
+</SideModal>
     </>
   );
 }

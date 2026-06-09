@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { FiPlus, FiFilter, FiEye, FiX, FiTrash2 } from "react-icons/fi";
+import SideModal from "../../components/layout/ui/SideModal";
 
 const defaultRecords = [
   {
@@ -265,8 +266,8 @@ function ClientTimesheet() {
         </div>
       </div>
 
-      {openModal && (
-        <SideModal
+      <SideModal
+          open={openModal}
           title="Add New Client Timesheet"
           subtitle="Submit client billable timesheet approval details."
           onClose={() => setOpenModal(false)}
@@ -421,15 +422,14 @@ function ClientTimesheet() {
             </button>
           </div>
         </SideModal>
-      )}
 
-      {viewItem && (
-        <SideModal
+      <SideModal
+          open={!!viewItem}
           title="Client Timesheet Details"
           subtitle="View submitted client approval information."
           onClose={() => setViewItem(null)}
         >
-          <div className="p-6 space-y-4">
+          {viewItem && <div className="space-y-4">
             <DetailRow label="Project Name" value={viewItem.project} />
             <DetailRow label="Project Code" value={viewItem.code} />
             <DetailRow label="Billable Period" value={`${viewItem.billableMonth} ${viewItem.billableYear}`} />
@@ -438,30 +438,8 @@ function ClientTimesheet() {
             <DetailRow label="Reporting Person" value={viewItem.reportingPerson} />
             <DetailRow label="Designation" value={viewItem.designation} />
             <DetailRow label="Comments" value={viewItem.comments} />
-          </div>
+          </div>}
         </SideModal>
-      )}
-    </div>
-  );
-}
-
-function SideModal({ title, subtitle, onClose, children }) {
-  return (
-    <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm flex justify-end">
-      <div className="h-screen w-full max-w-xl bg-white shadow-2xl overflow-y-auto">
-        <div className="sticky top-0 z-10 bg-white flex items-start justify-between px-6 py-5 border-b border-slate-100">
-          <div>
-            <h2 className="text-xl font-bold text-slate-900">{title}</h2>
-            <p className="text-sm text-slate-500 mt-1">{subtitle}</p>
-          </div>
-
-          <button onClick={onClose} className="w-10 h-10 rounded-xl hover:bg-slate-100 flex items-center justify-center">
-            <FiX className="text-slate-500 text-lg" />
-          </button>
-        </div>
-
-        {children}
-      </div>
     </div>
   );
 }

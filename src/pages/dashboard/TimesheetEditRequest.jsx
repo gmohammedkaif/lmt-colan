@@ -8,6 +8,7 @@ import {
   FiX,
   FiTrash2,
 } from "react-icons/fi";
+import SideModal from "../../components/layout/ui/SideModal";
 
 const defaultRequests = [
   {
@@ -238,8 +239,8 @@ function TimesheetEditRequest() {
         </div>
       </div>
 
-      {openModal && (
-        <SideModal
+      <SideModal
+          open={openModal}
           title="New Edit Request"
           subtitle="Submit timesheet edit permission request."
           onClose={() => setOpenModal(false)}
@@ -309,20 +310,19 @@ function TimesheetEditRequest() {
             </button>
           </div>
         </SideModal>
-      )}
 
-      {viewItem && (
-        <SideModal
+      <SideModal
+          open={!!viewItem}
           title="Request Details"
           subtitle="View edit request information."
           onClose={() => setViewItem(null)}
         >
-          <div className="p-6 space-y-4">
+          {viewItem && <div className="space-y-4">
             <DetailRow label="Interval" value={viewItem.interval} />
             <DetailRow label="Valid Upto" value={viewItem.validUpto} />
             <DetailRow label="Status" value={viewItem.status} />
             <DetailRow label="Comments" value={viewItem.comments} />
-          </div>
+          </div>}
 
           <div className="sticky bottom-0 bg-white border-t border-slate-100 p-5 flex justify-end">
             <button
@@ -333,31 +333,6 @@ function TimesheetEditRequest() {
             </button>
           </div>
         </SideModal>
-      )}
-    </div>
-  );
-}
-
-function SideModal({ title, subtitle, onClose, children }) {
-  return (
-    <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm flex justify-end">
-      <div className="h-screen w-full max-w-xl bg-white shadow-2xl overflow-y-auto">
-        <div className="sticky top-0 z-10 bg-white flex items-start justify-between px-6 py-5 border-b border-slate-100">
-          <div>
-            <h2 className="text-xl font-bold text-slate-900">{title}</h2>
-            <p className="text-sm text-slate-500 mt-1">{subtitle}</p>
-          </div>
-
-          <button
-            onClick={onClose}
-            className="w-10 h-10 rounded-xl hover:bg-slate-100 flex items-center justify-center"
-          >
-            <FiX className="text-slate-500 text-lg" />
-          </button>
-        </div>
-
-        {children}
-      </div>
     </div>
   );
 }

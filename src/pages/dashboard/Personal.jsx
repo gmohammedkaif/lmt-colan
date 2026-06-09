@@ -1,3 +1,4 @@
+import SideModal from "../../components/layout/ui/SideModal";
 import React, { useEffect, useState } from "react";
 import {
   Edit3,
@@ -175,148 +176,132 @@ export default function Personal() {
         </div>
       </div>
 
-      {openModal && (
-        <div className="fixed inset-0 z-50 flex justify-end bg-black/40 backdrop-blur-sm">
-          <div className="h-screen w-full max-w-3xl overflow-y-auto bg-white shadow-2xl">
-            <div className="sticky top-0 z-10 flex items-start justify-between border-b border-slate-200 bg-white px-6 py-5">
-              <div>
-                <h2 className="text-2xl font-bold text-slate-900">
-                  Edit Personal Details
-                </h2>
-                <p className="mt-1 text-sm text-slate-500">
-                  Update personal and identity information
-                </p>
-              </div>
+     <SideModal
+  open={openModal}
+  title="Edit Personal Details"
+  subtitle="Update personal and identity information"
+  onClose={() => setOpenModal(false)}
+  width="720px"
+>
+  <>
+    <div className="rounded-2xl border border-slate-200 bg-slate-50/60 overflow-hidden">
+      <div className="border-b border-slate-200 bg-white px-5 py-4">
+        <h3 className="font-bold text-slate-900">
+          Personal Details
+        </h3>
+      </div>
 
-              <button
-                onClick={() => setOpenModal(false)}
-                className="flex h-10 w-10 items-center justify-center rounded-xl hover:bg-slate-100"
-              >
-                <X size={20} />
-              </button>
-            </div>
+      <div className="p-5 space-y-4">
+        <FormInput
+          label="Father Name"
+          required
+          value={formData.fatherName}
+          onChange={(e) => handleChange("fatherName", e.target.value)}
+        />
 
-            <div className="p-6">
-              <div className="rounded-2xl border border-slate-200 bg-slate-50/60 overflow-hidden">
-                <div className="border-b border-slate-200 bg-white px-5 py-4">
-                  <h3 className="font-bold text-slate-900">
-                    Personal Details
-                  </h3>
-                </div>
+        <FormInput
+          label="Mother Name"
+          required
+          value={formData.motherName}
+          onChange={(e) => handleChange("motherName", e.target.value)}
+        />
 
-                <div className="p-5 space-y-4">
-                  <FormInput
-                    label="Father Name"
-                    required
-                    value={formData.fatherName}
-                    onChange={(e) => handleChange("fatherName", e.target.value)}
-                  />
+        <FormInput
+          label="DOB"
+          required
+          type="date"
+          value={formData.dob}
+          onChange={(e) => handleChange("dob", e.target.value)}
+        />
 
-                  <FormInput
-                    label="Mother Name"
-                    required
-                    value={formData.motherName}
-                    onChange={(e) => handleChange("motherName", e.target.value)}
-                  />
+        <FormInput
+          label="Blood Group"
+          value={formData.bloodGroup}
+          onChange={(e) => handleChange("bloodGroup", e.target.value)}
+        />
 
-                  <FormInput
-                    label="DOB"
-                    required
-                    type="date"
-                    value={formData.dob}
-                    onChange={(e) => handleChange("dob", e.target.value)}
-                  />
+        <FormInput
+          label="Skype ID Personal"
+          value={formData.skypePersonal}
+          onChange={(e) =>
+            handleChange("skypePersonal", e.target.value)
+          }
+        />
 
-                  <FormInput
-                    label="Blood Group"
-                    value={formData.bloodGroup}
-                    onChange={(e) => handleChange("bloodGroup", e.target.value)}
-                  />
+        <FormInput
+          label="Skype ID Official"
+          value={formData.skypeOfficial}
+          onChange={(e) =>
+            handleChange("skypeOfficial", e.target.value)
+          }
+        />
 
-                  <FormInput
-                    label="Skype ID Personal"
-                    value={formData.skypePersonal}
-                    onChange={(e) =>
-                      handleChange("skypePersonal", e.target.value)
-                    }
-                  />
+        <FormInput
+          label="Bank Acc/No"
+          value={formData.bankAccNo}
+          onChange={(e) => handleChange("bankAccNo", e.target.value)}
+        />
 
-                  <FormInput
-                    label="Skype ID Official"
-                    value={formData.skypeOfficial}
-                    onChange={(e) =>
-                      handleChange("skypeOfficial", e.target.value)
-                    }
-                  />
+        <FormInput
+          label="Pancard No"
+          value={formData.pancardNo}
+          onChange={(e) => handleChange("pancardNo", e.target.value)}
+        />
 
-                  <FormInput
-                    label="Bank Acc/No"
-                    value={formData.bankAccNo}
-                    onChange={(e) => handleChange("bankAccNo", e.target.value)}
-                  />
+        <FormInput
+          label="Passport Number"
+          value={formData.passportNumber}
+          onChange={(e) =>
+            handleChange("passportNumber", e.target.value)
+          }
+        />
 
-                  <FormInput
-                    label="Pancard No"
-                    value={formData.pancardNo}
-                    onChange={(e) => handleChange("pancardNo", e.target.value)}
-                  />
+        <FormInput
+          label="Passport Validity"
+          type="date"
+          value={formData.passportValidity}
+          onChange={(e) =>
+            handleChange("passportValidity", e.target.value)
+          }
+        />
 
-                  <FormInput
-                    label="Passport Number"
-                    value={formData.passportNumber}
-                    onChange={(e) =>
-                      handleChange("passportNumber", e.target.value)
-                    }
-                  />
+        <div className="grid gap-3 md:grid-cols-[190px_1fr] md:items-center">
+          <label className="text-sm font-bold text-slate-800">
+            Profile Picture
+          </label>
 
-                  <FormInput
-                    label="Passport Validity"
-                    type="date"
-                    value={formData.passportValidity}
-                    onChange={(e) =>
-                      handleChange("passportValidity", e.target.value)
-                    }
-                  />
-
-                  <div className="grid gap-3 md:grid-cols-[190px_1fr] md:items-center">
-                    <label className="text-sm font-bold text-slate-800">
-                      Profile Picture
-                    </label>
-
-                    <input
-                      type="file"
-                      onChange={(e) =>
-                        handleChange(
-                          "profilePicture",
-                          e.target.files?.[0]?.name || ""
-                        )
-                      }
-                      className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-600 file:mr-4 file:rounded-lg file:border-0 file:bg-blue-50 file:px-4 file:py-2 file:text-blue-600 file:font-semibold outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
-                    />
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="sticky bottom-0 flex justify-end gap-3 border-t border-slate-200 bg-white px-6 py-4">
-              <button
-                onClick={() => setOpenModal(false)}
-                className="rounded-xl border border-slate-200 px-5 py-3 text-sm font-semibold text-slate-600 hover:bg-slate-50"
-              >
-                Cancel
-              </button>
-
-              <button
-                onClick={handleSave}
-                className="inline-flex items-center gap-2 rounded-xl bg-emerald-500 px-6 py-3 text-sm font-semibold text-white hover:bg-emerald-600"
-              >
-                <Save size={16} />
-                Update
-              </button>
-            </div>
-          </div>
+          <input
+            type="file"
+            onChange={(e) =>
+              handleChange(
+                "profilePicture",
+                e.target.files?.[0]?.name || ""
+              )
+            }
+            className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-600 file:mr-4 file:rounded-lg file:border-0 file:bg-blue-50 file:px-4 file:py-2 file:text-blue-600 file:font-semibold outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+          />
         </div>
-      )}
+      </div>
+    </div>
+
+    <div className="sticky bottom-0 flex justify-end gap-3 border-t border-slate-200 bg-white px-6 py-4">
+      <button
+        onClick={() => setOpenModal(false)}
+        className="rounded-xl border border-slate-200 px-5 py-3 text-sm font-semibold text-slate-600 hover:bg-slate-50"
+      >
+        Cancel
+      </button>
+
+      <button
+        onClick={handleSave}
+        className="inline-flex items-center gap-2 rounded-xl bg-emerald-500 px-6 py-3 text-sm font-semibold text-white hover:bg-emerald-600"
+      >
+        <Save size={16} />
+        Update
+      </button>
+    </div>
+  </>
+</SideModal>
     </>
   );
 }

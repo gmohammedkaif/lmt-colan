@@ -1,3 +1,4 @@
+import SideModal from "../../components/layout/ui/SideModal";
 import { useState } from "react";
 import {
   FiSearch,
@@ -47,7 +48,7 @@ function FinalSourceList() {
   const filteredSources = sources.filter(
     (item) =>
       item.title.toLowerCase().includes(search.toLowerCase()) ||
-      item.projectCode.toLowerCase().includes(search.toLowerCase())
+      item.projectCode.toLowerCase().includes(search.toLowerCase()),
   );
 
   const stats = [
@@ -76,9 +77,7 @@ function FinalSourceList() {
       {/* Header */}
       <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-slate-900">
-            Final Source
-          </h1>
+          <h1 className="text-3xl font-bold text-slate-900">Final Source</h1>
 
           <p className="text-sm text-slate-500 mt-1">
             Manage final project source files, versions and delivery records.
@@ -106,9 +105,7 @@ function FinalSourceList() {
             >
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-slate-500">
-                    {item.title}
-                  </p>
+                  <p className="text-sm text-slate-500">{item.title}</p>
 
                   <h2 className="text-3xl font-bold text-slate-900 mt-2">
                     {item.value}
@@ -121,8 +118,8 @@ function FinalSourceList() {
                     item.color === "blue"
                       ? "bg-blue-50 text-blue-600"
                       : item.color === "green"
-                      ? "bg-green-50 text-green-600"
-                      : "bg-orange-50 text-orange-600"
+                        ? "bg-green-50 text-green-600"
+                        : "bg-orange-50 text-orange-600"
                   }`}
                 >
                   <Icon size={22} />
@@ -192,9 +189,7 @@ function FinalSourceList() {
                 >
                   {/* Project */}
                   <td className="px-5 py-5">
-                    <p className="font-semibold text-slate-900">
-                      {item.title}
-                    </p>
+                    <p className="font-semibold text-slate-900">{item.title}</p>
 
                     <p className="text-xs text-slate-500 mt-1">
                       {item.projectCode}
@@ -261,10 +256,7 @@ function FinalSourceList() {
 
               {filteredSources.length === 0 && (
                 <tr>
-                  <td
-                    colSpan="7"
-                    className="text-center py-12 text-slate-500"
-                  >
+                  <td colSpan="7" className="text-center py-12 text-slate-500">
                     No source records found.
                   </td>
                 </tr>
@@ -275,33 +267,17 @@ function FinalSourceList() {
       </div>
 
       {/* View Modal */}
-      {selectedSource && (
-        <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm flex justify-end">
-          <div className="w-full max-w-xl h-screen bg-white shadow-2xl overflow-y-auto">
-            <div className="flex items-start justify-between p-6 border-b border-slate-100">
+      <SideModal
+        open={!!selectedSource}
+        title="Final Source Details"
+        subtitle="View uploaded source and release information."
+        onClose={() => setSelectedSource(null)}
+      >
+        {selectedSource && (
+          <>
+            <div className="space-y-5">
               <div>
-                <h2 className="text-2xl font-bold text-slate-900">
-                  Final Source Details
-                </h2>
-
-                <p className="text-sm text-slate-500 mt-1">
-                  View uploaded source and release information.
-                </p>
-              </div>
-
-              <button
-                onClick={() => setSelectedSource(null)}
-                className="w-10 h-10 rounded-xl hover:bg-slate-100 flex items-center justify-center"
-              >
-                <FiX />
-              </button>
-            </div>
-
-            <div className="p-6 space-y-5">
-              <div>
-                <p className="text-sm text-slate-500">
-                  Project Name
-                </p>
+                <p className="text-sm text-slate-500">Project Name</p>
 
                 <h3 className="text-2xl font-bold text-slate-900 mt-1">
                   {selectedSource.title}
@@ -310,9 +286,7 @@ function FinalSourceList() {
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="bg-slate-50 rounded-2xl p-4">
-                  <p className="text-sm text-slate-500">
-                    Project Code
-                  </p>
+                  <p className="text-sm text-slate-500">Project Code</p>
 
                   <h4 className="font-bold text-slate-900 mt-1">
                     {selectedSource.projectCode}
@@ -320,9 +294,7 @@ function FinalSourceList() {
                 </div>
 
                 <div className="bg-slate-50 rounded-2xl p-4">
-                  <p className="text-sm text-slate-500">
-                    Version
-                  </p>
+                  <p className="text-sm text-slate-500">Version</p>
 
                   <h4 className="font-bold text-slate-900 mt-1">
                     {selectedSource.version}
@@ -330,9 +302,7 @@ function FinalSourceList() {
                 </div>
 
                 <div className="bg-slate-50 rounded-2xl p-4">
-                  <p className="text-sm text-slate-500">
-                    Uploaded By
-                  </p>
+                  <p className="text-sm text-slate-500">Uploaded By</p>
 
                   <h4 className="font-bold text-slate-900 mt-1">
                     {selectedSource.uploadedBy}
@@ -340,9 +310,7 @@ function FinalSourceList() {
                 </div>
 
                 <div className="bg-slate-50 rounded-2xl p-4">
-                  <p className="text-sm text-slate-500">
-                    Upload Date
-                  </p>
+                  <p className="text-sm text-slate-500">Upload Date</p>
 
                   <h4 className="font-bold text-slate-900 mt-1">
                     {selectedSource.uploadedOn}
@@ -362,9 +330,7 @@ function FinalSourceList() {
 
               <div className="flex items-center justify-between bg-slate-50 rounded-2xl p-4">
                 <div>
-                  <p className="text-sm text-slate-500">
-                    Current Status
-                  </p>
+                  <p className="text-sm text-slate-500">Current Status</p>
 
                   <h4 className="font-bold text-slate-900 mt-1">
                     {selectedSource.status}
@@ -396,133 +362,117 @@ function FinalSourceList() {
                 Download Source
               </button>
             </div>
-          </div>
-        </div>
-      )}
+          </>
+        )}
+      </SideModal>
 
       {/* Add Modal */}
-      {openModal && (
-        <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm flex justify-end">
-          <div className="w-full max-w-xl h-screen bg-white shadow-2xl overflow-y-auto">
-            <div className="flex items-start justify-between p-6 border-b border-slate-100">
-              <div>
-                <h2 className="text-2xl font-bold text-slate-900">
-                  Add Final Source
-                </h2>
+      <SideModal
+        open={openModal}
+        title="Add Final Source"
+        subtitle="Upload and manage final delivery source files."
+        onClose={() => setOpenModal(false)}
+      >
+        <>
+          <div className="space-y-5">
+            <div>
+              <label className="text-sm font-medium text-slate-700">
+                Project Title
+              </label>
 
-                <p className="text-sm text-slate-500 mt-1">
-                  Upload and manage final delivery source files.
+              <input
+                type="text"
+                placeholder="Enter project title"
+                className="w-full mt-2 px-4 py-3 rounded-xl border border-slate-200 outline-none focus:ring-4 focus:ring-blue-100"
+              />
+            </div>
+
+            <div>
+              <label className="text-sm font-medium text-slate-700">
+                Project Code
+              </label>
+
+              <input
+                type="text"
+                placeholder="PRJ-2026-001"
+                className="w-full mt-2 px-4 py-3 rounded-xl border border-slate-200 outline-none focus:ring-4 focus:ring-blue-100"
+              />
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="text-sm font-medium text-slate-700">
+                  Source Type
+                </label>
+
+                <select className="w-full mt-2 px-4 py-3 rounded-xl border border-slate-200 outline-none focus:ring-4 focus:ring-blue-100">
+                  <option>Git Repository</option>
+                  <option>Zip File</option>
+                  <option>Drive Link</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="text-sm font-medium text-slate-700">
+                  Version
+                </label>
+
+                <input
+                  type="text"
+                  placeholder="v1.0"
+                  className="w-full mt-2 px-4 py-3 rounded-xl border border-slate-200 outline-none focus:ring-4 focus:ring-blue-100"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="text-sm font-medium text-slate-700">
+                Upload Source
+              </label>
+
+              <div className="mt-2 border-2 border-dashed border-slate-200 rounded-2xl p-8 text-center hover:border-blue-400 transition">
+                <FiUploadCloud
+                  className="mx-auto text-slate-400 mb-3"
+                  size={34}
+                />
+
+                <p className="text-sm text-slate-600">
+                  Click to upload source file
+                </p>
+
+                <p className="text-xs text-slate-400 mt-1">
+                  ZIP, RAR or repository link
                 </p>
               </div>
-
-              <button
-                onClick={() => setOpenModal(false)}
-                className="w-10 h-10 rounded-xl hover:bg-slate-100 flex items-center justify-center"
-              >
-                <FiX />
-              </button>
             </div>
 
-            <div className="p-6 space-y-5">
-              <div>
-                <label className="text-sm font-medium text-slate-700">
-                  Project Title
-                </label>
+            <div>
+              <label className="text-sm font-medium text-slate-700">
+                Description
+              </label>
 
-                <input
-                  type="text"
-                  placeholder="Enter project title"
-                  className="w-full mt-2 px-4 py-3 rounded-xl border border-slate-200 outline-none focus:ring-4 focus:ring-blue-100"
-                />
-              </div>
-
-              <div>
-                <label className="text-sm font-medium text-slate-700">
-                  Project Code
-                </label>
-
-                <input
-                  type="text"
-                  placeholder="PRJ-2026-001"
-                  className="w-full mt-2 px-4 py-3 rounded-xl border border-slate-200 outline-none focus:ring-4 focus:ring-blue-100"
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="text-sm font-medium text-slate-700">
-                    Source Type
-                  </label>
-
-                  <select className="w-full mt-2 px-4 py-3 rounded-xl border border-slate-200 outline-none focus:ring-4 focus:ring-blue-100">
-                    <option>Git Repository</option>
-                    <option>Zip File</option>
-                    <option>Drive Link</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label className="text-sm font-medium text-slate-700">
-                    Version
-                  </label>
-
-                  <input
-                    type="text"
-                    placeholder="v1.0"
-                    className="w-full mt-2 px-4 py-3 rounded-xl border border-slate-200 outline-none focus:ring-4 focus:ring-blue-100"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label className="text-sm font-medium text-slate-700">
-                  Upload Source
-                </label>
-
-                <div className="mt-2 border-2 border-dashed border-slate-200 rounded-2xl p-8 text-center hover:border-blue-400 transition">
-                  <FiUploadCloud
-                    className="mx-auto text-slate-400 mb-3"
-                    size={34}
-                  />
-
-                  <p className="text-sm text-slate-600">
-                    Click to upload source file
-                  </p>
-
-                  <p className="text-xs text-slate-400 mt-1">
-                    ZIP, RAR or repository link
-                  </p>
-                </div>
-              </div>
-
-              <div>
-                <label className="text-sm font-medium text-slate-700">
-                  Description
-                </label>
-
-                <textarea
-                  rows={5}
-                  placeholder="Enter source delivery notes..."
-                  className="w-full mt-2 px-4 py-3 rounded-xl border border-slate-200 outline-none resize-none focus:ring-4 focus:ring-blue-100"
-                />
-              </div>
-            </div>
-
-            <div className="sticky bottom-0 bg-white border-t border-slate-100 p-5 flex justify-end gap-3">
-              <button
-                onClick={() => setOpenModal(false)}
-                className="px-5 py-3 rounded-xl border border-slate-200 text-slate-700 font-medium hover:bg-slate-50"
-              >
-                Cancel
-              </button>
-
-              <button className="px-5 py-3 rounded-xl bg-blue-600 text-white font-semibold hover:bg-blue-700">
-                Save Source
-              </button>
+              <textarea
+                rows={5}
+                placeholder="Enter source delivery notes..."
+                className="w-full mt-2 px-4 py-3 rounded-xl border border-slate-200 outline-none resize-none focus:ring-4 focus:ring-blue-100"
+              />
             </div>
           </div>
-        </div>
-      )}
+
+          <div className="sticky bottom-0 bg-white border-t border-slate-100 p-5 flex justify-end gap-3">
+            <button
+              onClick={() => setOpenModal(false)}
+              className="px-5 py-3 rounded-xl border border-slate-200 text-slate-700 font-medium hover:bg-slate-50"
+            >
+              Cancel
+            </button>
+
+            <button className="px-5 py-3 rounded-xl bg-blue-600 text-white font-semibold hover:bg-blue-700">
+              Save Source
+            </button>
+          </div>
+        </>
+      </SideModal>
     </div>
   );
 }

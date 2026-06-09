@@ -17,11 +17,11 @@ const STORAGE_KEY = "cipl_projects";
 const tabs = ["Overview", "Description", "Team", "Budget"];
 
 const teamMembers = [
-  { name: "Hassan Ambur", role: "Project Manager", id: "CIPL6767" },
-  { name: "Sheik FT Faizan Ur Rahman", role: "Team Leader", id: "CIPL00007" },
-  { name: "Zaid Ali", role: "Frontend Developer", id: "CIPL0029" },
-  { name: "Mohammed Vighnesh", role: "Project Coordinator", id: "CIPL1111" },
-  { name: "Kaif Khiladi", role: "Design Lead", id: "CIPL00212" },
+  { name: "kaif", role: "Project Manager", id: "CIPL6767" },
+  { name: "kaif", role: "Team Leader", id: "CIPL00007" },
+  { name: "kaif", role: "Frontend Developer", id: "CIPL0029" },
+  { name: "kaif", role: "Project Coordinator", id: "CIPL1111" },
+  { name: "Kaif ", role: "Design Lead", id: "CIPL00212" },
 ];
 
 function ProjectDetails() {
@@ -36,9 +36,7 @@ function ProjectDetails() {
   if (!project) {
     return (
       <div className="bg-white border border-slate-200 rounded-2xl p-8 text-center">
-        <h2 className="text-xl font-bold text-slate-900">
-          Project not found
-        </h2>
+        <h2 className="text-xl font-bold text-slate-900">Project not found</h2>
 
         <button
           onClick={() => navigate("/dashboard/projects")}
@@ -320,12 +318,9 @@ function ProjectDetails() {
                         {member.name}
                       </h4>
 
-                      <p className="text-sm text-slate-500 mt-1">
-                        {member.id}
-                      </p>
+                      <p className="text-sm text-slate-500 mt-1">{member.id}</p>
                     </div>
                   </div>
-
                   <div className="text-sm text-slate-600 font-medium">
                     {member.role}
                   </div>

@@ -12,6 +12,7 @@ import {
 
 } from "react-icons/fi";
 import { useState } from "react";
+import SideModal from "../../components/layout/ui/SideModal";
 
 const entries = [
   {
@@ -345,31 +346,16 @@ function Timesheet() {
       </div>
 
       {/* ADD TIMESHEET MODAL */}
-      {openModal && (
-        <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm flex justify-end">
-          <div className="w-full max-w-2xl h-screen bg-white shadow-2xl overflow-y-auto">
-            {/* HEADER */}
-            <div className="flex items-start justify-between p-6 border-b border-slate-100">
-              <div>
-                <h2 className="text-2xl font-bold text-slate-900">
-                  Add New Timesheet
-                </h2>
-
-                <p className="text-sm text-slate-500 mt-1">
-                  Add project work hours and employee activity.
-                </p>
-              </div>
-
-              <button
-                onClick={() => setOpenModal(false)}
-                className="w-10 h-10 rounded-xl hover:bg-slate-100 flex items-center justify-center"
-              >
-                <FiX className="text-slate-500" size={20} />
-              </button>
-            </div>
-
+      <SideModal
+        open={openModal}
+        title="Add New Timesheet"
+        subtitle="Add project work hours and employee activity."
+        onClose={() => setOpenModal(false)}
+        width="640px"
+      >
+        <div>
             {/* FORM */}
-            <div className="p-6 space-y-5">
+            <div className="space-y-5">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                 <div>
                   <label className="text-sm font-semibold text-slate-700">
@@ -485,8 +471,7 @@ function Timesheet() {
               </button>
             </div>
           </div>
-        </div>
-      )}
+        </SideModal>
     </>
   );
 }

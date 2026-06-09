@@ -1,6 +1,8 @@
-import { Outlet, NavLink, useLocation } from "react-router-dom";
+import { useState } from "react";
+import { Outlet, NavLink, useLocation, useNavigate } from "react-router-dom";
 import Sidebar from "./Sidebar";
 import Footer from "./Footer";
+import { FiMenu, FiX, FiChevronLeft } from "react-icons/fi";
 
 const subNavItems = {
   tasks: [
@@ -55,10 +57,19 @@ const settingsRoutes = [
   "account-settings",
 ];
 
-function Topbar() {
+// Pages where back button should appear (not the root dashboard)
+const pagesWithBack = [
+  "tasks", "todo", "rfp", "projects", "timesheet", "qa",
+  "final-resource", "settings", "qualification", "personal",
+  "address", "account-settings",
+];
+
+function Topbar({ onMenuOpen }) {
   const location = useLocation();
+  const navigate = useNavigate();
   const segment = location.pathname.split("/")[2] || "dashboard";
   const page = pageTitles[segment] || { title: segment, sub: "" };
+  const showBack = pagesWithBack.includes(segment);
 
   return (
     <div className="ci-topbar">
@@ -75,6 +86,13 @@ function Topbar() {
           border-bottom: 1px solid #f8fafc;
           flex-shrink: 0;
           font-family: 'DM Sans', sans-serif;
+        }
+
+        .ci-topbar-left {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          min-width: 0;
         }
 
         .ci-topbar-title {
@@ -94,6 +112,7 @@ function Topbar() {
           display: flex;
           align-items: center;
           gap: 10px;
+          flex-shrink: 0;
         }
 
         .ci-topbar-pill {
@@ -114,7 +133,42 @@ function Topbar() {
           color: #94a3b8;
         }
 
-        @media (max-width: 640px) {
+        .ci-hamburger-btn {
+          display: none;
+          align-items: center;
+          justify-content: center;
+          width: 36px;
+          height: 36px;
+          border-radius: 10px;
+          border: 1px solid #e2e8f0;
+          background: #f8fafc;
+          cursor: pointer;
+          color: #64748b;
+          flex-shrink: 0;
+        }
+
+        .ci-back-btn {
+          display: none;
+          align-items: center;
+          justify-content: center;
+          width: 34px;
+          height: 34px;
+          border-radius: 9px;
+          border: 1px solid #e2e8f0;
+          background: #f8fafc;
+          cursor: pointer;
+          color: #64748b;
+          flex-shrink: 0;
+          transition: background 0.15s, color 0.15s;
+        }
+
+        .ci-back-btn:hover {
+          background: #eff6ff;
+          color: #1d4ed8;
+          border-color: #bfdbfe;
+        }
+
+        @media (max-width: 1023px) {
           .ci-topbar {
             padding: 0 16px;
           }
@@ -122,12 +176,42 @@ function Topbar() {
           .ci-topbar-date {
             display: none;
           }
+
+          .ci-hamburger-btn {
+            display: flex;
+          }
+
+          .ci-back-btn {
+            display: flex;
+          }
         }
       `}</style>
 
-      <div>
-        <div className="ci-topbar-title">{page.title}</div>
-        <div className="ci-topbar-sub">{page.sub}</div>
+      <div className="ci-topbar-left">
+        {/* Hamburger — always shown on mobile */}
+        <button
+          className="ci-hamburger-btn"
+          onClick={onMenuOpen}
+          aria-label="Open navigation"
+        >
+          <FiMenu size={18} />
+        </button>
+
+        {/* Back button — shown on inner pages on mobile */}
+        {showBack && (
+          <button
+            className="ci-back-btn"
+            onClick={() => navigate(-1)}
+            aria-label="Go back"
+          >
+            <FiChevronLeft size={18} />
+          </button>
+        )}
+
+        <div>
+          <div className="ci-topbar-title">{page.title}</div>
+          <div className="ci-topbar-sub">{page.sub}</div>
+        </div>
       </div>
 
       <div className="ci-topbar-right">
@@ -243,7 +327,92 @@ function SubNavbar() {
   );
 }
 
+// Mobile sidebar drawer overlay
+function MobileDrawer({ open, onClose }) {
+  return (
+    <>
+      <style>{`
+        .ci-mobile-overlay {
+          position: fixed;
+          inset: 0;
+          z-index: 200;
+          background: rgba(15,23,42,0.45);
+          backdrop-filter: blur(2px);
+          opacity: 0;
+          pointer-events: none;
+          transition: opacity 0.3s ease;
+        }
+        .ci-mobile-overlay.open {
+          opacity: 1;
+          pointer-events: all;
+        }
+        .ci-mobile-drawer {
+          position: fixed;
+          top: 0;
+          left: 0;
+          bottom: 0;
+          z-index: 201;
+          width: 260px;
+          background: #ffffff;
+          border-right: 1px solid #f1f5f9;
+          transform: translateX(-100%);
+          transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+          display: flex;
+          flex-direction: column;
+        }
+        .ci-mobile-drawer.open {
+          transform: translateX(0);
+        }
+        .ci-mobile-close-btn {
+          position: absolute;
+          top: 14px;
+          right: 14px;
+          width: 32px;
+          height: 32px;
+          border-radius: 8px;
+          border: 1px solid #e2e8f0;
+          background: #f8fafc;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          cursor: pointer;
+          color: #64748b;
+          z-index: 1;
+        }
+        .ci-mobile-close-btn:hover {
+          background: #fee2e2;
+          color: #dc2626;
+          border-color: #fecaca;
+        }
+        @media (min-width: 1024px) {
+          .ci-mobile-overlay,
+          .ci-mobile-drawer {
+            display: none !important;
+          }
+        }
+      `}</style>
+
+      {/* Backdrop */}
+      <div
+        className={`ci-mobile-overlay${open ? " open" : ""}`}
+        onClick={onClose}
+      />
+
+      {/* Drawer — reuses Sidebar content but inline */}
+      <div className={`ci-mobile-drawer${open ? " open" : ""}`}>
+        <button className="ci-mobile-close-btn" onClick={onClose} aria-label="Close menu">
+          <FiX size={16} />
+        </button>
+        {/* Render Sidebar inside drawer; it will render its full content */}
+        <Sidebar mobileMode onLinkClick={onClose} />
+      </div>
+    </>
+  );
+}
+
 function DashboardLayout() {
+  const [mobileNavOpen, setMobileNavOpen] = useState(false);
+
   return (
     <div className="ci-layout">
       <style>{`
@@ -312,10 +481,14 @@ function DashboardLayout() {
         }
       `}</style>
 
+      {/* Desktop sidebar — hidden on mobile via Sidebar's own hidden lg:flex */}
       <Sidebar />
 
+      {/* Mobile drawer */}
+      <MobileDrawer open={mobileNavOpen} onClose={() => setMobileNavOpen(false)} />
+
       <div className="ci-main-area">
-        <Topbar />
+        <Topbar onMenuOpen={() => setMobileNavOpen(true)} />
         <SubNavbar />
 
         <main className="ci-page-content">

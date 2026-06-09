@@ -6,6 +6,7 @@ import {
   FiClock,
   FiX,
 } from "react-icons/fi";
+import SideModal from "../../components/layout/ui/SideModal";
 
 const approvals = [
   {
@@ -176,32 +177,15 @@ function TimesheetApproval() {
       </div>
 
       {/* MODAL */}
-      {openModal && (
-        <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="w-full max-w-2xl bg-white rounded-3xl shadow-2xl overflow-hidden">
-            
-            {/* HEADER */}
-            <div className="flex items-center justify-between px-6 py-5 border-b border-slate-100">
-              <div>
-                <h2 className="text-xl font-bold text-slate-900">
-                  New Approval Request
-                </h2>
-
-                <p className="text-sm text-slate-500 mt-1">
-                  Submit weekly timesheet for approval.
-                </p>
-              </div>
-
-              <button
-                onClick={() => setOpenModal(false)}
-                className="w-10 h-10 rounded-xl hover:bg-slate-100 flex items-center justify-center"
-              >
-                <FiX className="text-slate-500 text-lg" />
-              </button>
-            </div>
-
+      <SideModal
+        open={openModal}
+        title="New Approval Request"
+        subtitle="Submit weekly timesheet for approval."
+        onClose={() => setOpenModal(false)}
+      >
+        <div>
             {/* BODY */}
-            <div className="p-6 space-y-5">
+            <div className="space-y-5">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                 <div>
                   <label className="text-sm font-semibold text-slate-700">
@@ -253,8 +237,7 @@ function TimesheetApproval() {
               </div>
             </div>
           </div>
-        </div>
-      )}
+        </SideModal>
     </div>
   );
 }
