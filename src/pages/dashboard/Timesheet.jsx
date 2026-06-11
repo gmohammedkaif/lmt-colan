@@ -12,6 +12,7 @@ import {
 
 } from "react-icons/fi";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import SideModal from "../../components/layout/ui/SideModal";
 
 const entries = [
@@ -41,6 +42,7 @@ const entries = [
 
 function Timesheet() {
   const [openModal, setOpenModal] = useState(false);
+  const navigate = useNavigate();
 
   return (
     <>
@@ -59,8 +61,10 @@ function Timesheet() {
         {/* TOP CARDS */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
   {/* FIXED PRICE */}
-  <div className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-slate-900 via-slate-800 to-slate-700 p-5 border border-slate-700/60 shadow-sm hover:shadow-lg transition-all duration-300">
-    
+<div
+  onClick={() => navigate("/dashboard/fixed-price")}
+  className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-slate-900 via-slate-800 to-slate-700 p-5 border border-slate-700/60 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 cursor-pointer"
+>    
     <div className="flex items-start justify-between">
       <div>
         <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-slate-400">
@@ -93,7 +97,7 @@ function Timesheet() {
   </div>
 
   {/* TIME & MATERIAL */}
-  <div className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-indigo-800 to-blue-700 p-5 border border-indigo-700/60 shadow-sm hover:shadow-lg transition-all duration-300">
+  <div onClick={() => navigate("/dashboard/time-material")} className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-indigo-800 to-blue-700 p-5 border border-indigo-700/60 shadow-sm hover:shadow-lg transition-all duration-300">
 
     <div className="flex items-start justify-between">
       <div>
@@ -127,7 +131,7 @@ function Timesheet() {
   </div>
 
   {/* RETAINER */}
-  <div className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-violet-800 to-fuchsia-700 p-5 border border-violet-700/60 shadow-sm hover:shadow-lg transition-all duration-300">
+  <div onClick={() => navigate("/dashboard/retainer")} className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-violet-800 to-fuchsia-700 p-5 border border-violet-700/60 shadow-sm hover:shadow-lg transition-all duration-300">
 
     <div className="flex items-start justify-between">
       <div>

@@ -25,6 +25,9 @@ import Qualification from "./pages/dashboard/Qualification";
 import Personal from "./pages/dashboard/Personal";
 import AddressCommDetails from "./pages/dashboard/Address";
 import AccountSettings from "./pages/dashboard/AccountSettings";
+import FixedPrice from "./pages/dashboard/FixedPrice";
+import TimeMaterial from "./pages/dashboard/TimeMaterial";
+import Retainer from "./pages/dashboard/Retainer";
 
 function App() {
   return (
@@ -57,6 +60,9 @@ function App() {
   <Route path="personal" element={<Personal />} />
   <Route path="address" element={<AddressCommDetails />} />
   <Route path="account-settings" element={<AccountSettings />} />
+  <Route path="/dashboard/fixed-price" element={<FixedPrice />} />
+  <Route path="/dashboard/time-material" element={<TimeMaterial />} />
+  <Route path="/dashboard/retainer" element={<Retainer />} />
       </Route>
     </Routes>
   );
