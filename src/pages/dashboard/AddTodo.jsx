@@ -158,7 +158,13 @@ function AddTodo() {
 
     setIsSubmitting(true);
     setTimeout(() => {
-      const old = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+      let old = [];
+      try {
+        const data = localStorage.getItem(STORAGE_KEY);
+        old = data ? JSON.parse(data) : [];
+      } catch {
+        old = [];
+      }
       const todo = {
         id: Date.now(), type: formData.type, description: formData.description.trim(),
         status: "Pending", time: formData.time, notification: formData.notification,

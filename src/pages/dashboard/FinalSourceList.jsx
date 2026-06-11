@@ -40,12 +40,77 @@ const sources = [
   },
 ];
 
+const SOURCE_KEY = "cipl_final_sources";
+
+function loadSources() {
+  try {
+    const data = localStorage.getItem(SOURCE_KEY);
+    return data ? JSON.parse(data) : [];
+  } catch {
+    return [];
+  }
+}
+
 function FinalSourceList() {
   const [search, setSearch] = useState("");
   const [openModal, setOpenModal] = useState(false);
   const [selectedSource, setSelectedSource] = useState(null);
+  const [sourceList, setSourceList] = useState(loadSources);
+  const [modalForm, setModalForm] = useState({
+    title: "", projectCode: "", sourceType: "Git Repository", version: "", description: "",
+  });
+  const [modalErrors, setModalErrors] = useState({});
+  const [submitted, setSubmitted] = useState(false);
 
-  const filteredSources = sources.filter(
+  const handleModalChange = (e) => {
+    const { name, value } = e.target;
+    setModalForm((prev) => ({ ...prev, [name]: value }));
+    setModalErrors((prev) => ({ ...prev, [name]: "" }));
+  };
+
+  const validateModal = () => {
+    const errs = {};
+    if (!modalForm.title.trim()) errs.title = "Project title required";
+    if (!modalForm.projectCode.trim()) errs.projectCode = "Project code required";
+    if (!modalForm.description.trim()) errs.description = "Description required";
+    return errs;
+  };
+
+  const openAddModal = () => {
+    setModalForm({ title: "", projectCode: "", sourceType: "Git Repository", version: "", description: "" });
+    setModalErrors({});
+    setSubmitted(false);
+    setOpenModal(true);
+  };
+
+  const handleSaveSource = (e) => {
+    e.preventDefault();
+    const errs = validateModal();
+    setModalErrors(errs);
+    if (Object.keys(errs).length) return;
+
+    const newSource = {
+      id: "FS-" + String(Date.now()).slice(-6),
+      projectCode: modalForm.projectCode,
+      title: modalForm.title,
+      sourceType: modalForm.sourceType,
+      uploadedBy: "Kaif",
+      uploadedOn: new Date().toLocaleDateString("en-US", { day: "numeric", month: "short", year: "numeric" }),
+      version: modalForm.version || "v1.0",
+      status: "Active",
+      description: modalForm.description,
+    };
+
+    const updated = [...sourceList, newSource];
+    setSourceList(updated);
+    try { localStorage.setItem(SOURCE_KEY, JSON.stringify(updated)); } catch { console.warn("Failed to save"); }
+    setSubmitted(true);
+    setTimeout(() => { setOpenModal(false); setSubmitted(false); }, 1200);
+  };
+
+  const allSources = [...sources, ...sourceList];
+
+  const filteredSources = allSources.filter(
     (item) =>
       item.title.toLowerCase().includes(search.toLowerCase()) ||
       item.projectCode.toLowerCase().includes(search.toLowerCase()),
@@ -54,19 +119,19 @@ function FinalSourceList() {
   const stats = [
     {
       title: "Total Sources",
-      value: "2",
+      value: String(allSources.length),
       icon: FiGitBranch,
       color: "blue",
     },
     {
       title: "Active",
-      value: "1",
+      value: String(allSources.filter((s) => s.status === "Active").length),
       icon: FiCheckCircle,
       color: "green",
     },
     {
       title: "Under Review",
-      value: "1",
+      value: String(allSources.filter((s) => s.status === "Review").length),
       icon: FiClock,
       color: "orange",
     },
@@ -85,7 +150,7 @@ function FinalSourceList() {
         </div>
 
         <button
-          onClick={() => setOpenModal(true)}
+          onClick={openAddModal}
           className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 transition text-white px-5 py-3 rounded-2xl text-sm font-semibold shadow-sm"
         >
           <FiPlus />
@@ -373,54 +438,103 @@ function FinalSourceList() {
         subtitle="Upload and manage final delivery source files."
         onClose={() => setOpenModal(false)}
       >
-        <>
+        <form onSubmit={handleSaveSource}>
+          {submitted && (
+            <div className="mb-4 bg-emerald-50 border border-emerald-200 text-emerald-700 px-4 py-3 rounded-xl text-sm font-semibold">
+              Source added successfully!
+            </div>
+          )}
           <div className="space-y-5">
             <div>
-              <label className="text-sm font-medium text-slate-700">
+              <label
+                htmlFor="fs-title"
+                className="text-sm font-medium text-slate-700"
+              >
                 Project Title
               </label>
 
               <input
+                id="fs-title"
                 type="text"
+                name="title"
+                value={modalForm.title}
+                onChange={handleModalChange}
                 placeholder="Enter project title"
-                className="w-full mt-2 px-4 py-3 rounded-xl border border-slate-200 outline-none focus:ring-4 focus:ring-blue-100"
+                className={`w-full mt-2 px-4 py-3 rounded-xl border outline-none ${
+                  modalErrors.title
+                    ? "border-red-300 bg-red-50"
+                    : "border-slate-200"
+                }`}
               />
+              {modalErrors.title && (
+                <p className="text-xs text-red-500 mt-1">{modalErrors.title}</p>
+              )}
             </div>
 
             <div>
-              <label className="text-sm font-medium text-slate-700">
+              <label
+                htmlFor="fs-code"
+                className="text-sm font-medium text-slate-700"
+              >
                 Project Code
               </label>
 
               <input
+                id="fs-code"
                 type="text"
+                name="projectCode"
+                value={modalForm.projectCode}
+                onChange={handleModalChange}
                 placeholder="PRJ-2026-001"
-                className="w-full mt-2 px-4 py-3 rounded-xl border border-slate-200 outline-none focus:ring-4 focus:ring-blue-100"
+                className={`w-full mt-2 px-4 py-3 rounded-xl border outline-none ${
+                  modalErrors.projectCode
+                    ? "border-red-300 bg-red-50"
+                    : "border-slate-200"
+                }`}
               />
+              {modalErrors.projectCode && (
+                <p className="text-xs text-red-500 mt-1">{modalErrors.projectCode}</p>
+              )}
             </div>
 
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="text-sm font-medium text-slate-700">
+                <label
+                  htmlFor="fs-type"
+                  className="text-sm font-medium text-slate-700"
+                >
                   Source Type
                 </label>
 
-                <select className="w-full mt-2 px-4 py-3 rounded-xl border border-slate-200 outline-none focus:ring-4 focus:ring-blue-100">
-                  <option>Git Repository</option>
-                  <option>Zip File</option>
-                  <option>Drive Link</option>
+                <select
+                  id="fs-type"
+                  name="sourceType"
+                  value={modalForm.sourceType}
+                  onChange={handleModalChange}
+                  className="w-full mt-2 px-4 py-3 rounded-xl border border-slate-200 outline-none"
+                >
+                  <option value="Git Repository">Git Repository</option>
+                  <option value="Zip File">Zip File</option>
+                  <option value="Drive Link">Drive Link</option>
                 </select>
               </div>
 
               <div>
-                <label className="text-sm font-medium text-slate-700">
+                <label
+                  htmlFor="fs-version"
+                  className="text-sm font-medium text-slate-700"
+                >
                   Version
                 </label>
 
                 <input
+                  id="fs-version"
                   type="text"
+                  name="version"
+                  value={modalForm.version}
+                  onChange={handleModalChange}
                   placeholder="v1.0"
-                  className="w-full mt-2 px-4 py-3 rounded-xl border border-slate-200 outline-none focus:ring-4 focus:ring-blue-100"
+                  className="w-full mt-2 px-4 py-3 rounded-xl border border-slate-200 outline-none"
                 />
               </div>
             </div>
@@ -447,31 +561,49 @@ function FinalSourceList() {
             </div>
 
             <div>
-              <label className="text-sm font-medium text-slate-700">
+              <label
+                htmlFor="fs-desc"
+                className="text-sm font-medium text-slate-700"
+              >
                 Description
               </label>
 
               <textarea
+                id="fs-desc"
+                name="description"
+                value={modalForm.description}
+                onChange={handleModalChange}
                 rows={5}
                 placeholder="Enter source delivery notes..."
-                className="w-full mt-2 px-4 py-3 rounded-xl border border-slate-200 outline-none resize-none focus:ring-4 focus:ring-blue-100"
+                className={`w-full mt-2 px-4 py-3 rounded-xl border outline-none resize-none ${
+                  modalErrors.description
+                    ? "border-red-300 bg-red-50"
+                    : "border-slate-200"
+                }`}
               />
+              {modalErrors.description && (
+                <p className="text-xs text-red-500 mt-1">{modalErrors.description}</p>
+              )}
             </div>
           </div>
 
           <div className="sticky bottom-0 bg-white border-t border-slate-100 p-5 flex justify-end gap-3">
             <button
+              type="button"
               onClick={() => setOpenModal(false)}
               className="px-5 py-3 rounded-xl border border-slate-200 text-slate-700 font-medium hover:bg-slate-50"
             >
               Cancel
             </button>
 
-            <button className="px-5 py-3 rounded-xl bg-blue-600 text-white font-semibold hover:bg-blue-700">
+            <button
+              type="submit"
+              className="px-5 py-3 rounded-xl bg-blue-600 text-white font-semibold hover:bg-blue-700"
+            >
               Save Source
             </button>
           </div>
-        </>
+        </form>
       </SideModal>
     </div>
   );

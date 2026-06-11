@@ -1,6 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
 import { FiChevronLeft, FiChevronRight, FiPlus, FiX, FiClock, FiCheckCircle, FiAlertCircle, FiList, FiCalendar, FiTrendingUp } from "react-icons/fi";
 import SideModal from "../../components/layout/ui/SideModal";
+import ConfirmModal from "../../utils/ConfirmModal";
+import { useToast, Toast } from "../../utils/Toast";
 
 const STORAGE_KEY = "cipl_tasks";
 
@@ -166,6 +168,8 @@ function TaskList() {
   const [mode, setMode] = useState("day");
   const [tasks, setTasks] = useState([]);
   const [openModal, setOpenModal] = useState(false);
+  const [pendingDelete, setPendingDelete] = useState(null);
+  const { toast, showToast } = useToast();
 
   const [form, setForm] = useState({
     project: "", employee: "", task: "", priority: "Normal", status: "Pending",
@@ -213,10 +217,11 @@ function TaskList() {
     setOpenModal(false);
   };
 
-  const deleteTask = (id) => {
-    if (window.confirm("Delete this task?")) {
-      setTasks(prev => prev.filter(t => t.id !== id));
-    }
+  const confirmDeleteTask = () => {
+    if (!pendingDelete) return;
+    setTasks(prev => prev.filter(t => t.id !== pendingDelete));
+    setPendingDelete(null);
+    showToast("Task deleted", "delete");
   };
 
   // ── Input field style helper ────────────────────────────────────────────────
@@ -390,10 +395,10 @@ function TaskList() {
                     onMouseEnter={e => e.currentTarget.style.background = "#F8FAFC"}
                     onMouseLeave={e => e.currentTarget.style.background = "transparent"}
                   >
-                    <td style={{ padding: "15px 20px", textAlign: "center" }}>
+                    <td style={{ padding: "15px 20px", textAlign: "center", wordBreak: "break-word", overflowWrap: "break-word", whiteSpace: "normal" }}>
                       <span style={{ fontSize: 13, fontWeight: 700, color: "#1E293B" }}>{item.project}</span>
                     </td>
-                    <td style={{ padding: "15px 20px", textAlign: "center" }}>
+                    <td style={{ padding: "15px 20px", textAlign: "center", wordBreak: "break-word", overflowWrap: "break-word", whiteSpace: "normal" }}>
                       <div style={{ display: "inline-flex", alignItems: "center", gap: 8 }}>
                         <div style={{
                           width: 28, height: 28, borderRadius: "50%",
@@ -406,7 +411,7 @@ function TaskList() {
                         <span style={{ fontSize: 13, color: "#475569" }}>{item.employee}</span>
                       </div>
                     </td>
-                    <td style={{ padding: "15px 20px", textAlign: "center" }}>
+                    <td style={{ padding: "15px 20px", textAlign: "center", wordBreak: "break-word", overflowWrap: "break-word", whiteSpace: "normal" }}>
                       <span style={{ fontSize: 13, color: "#475569", maxWidth: 200, display: "inline-block" }}>{item.task}</span>
                     </td>
                     <td style={{ padding: "15px 20px", textAlign: "center" }}>
@@ -416,7 +421,7 @@ function TaskList() {
                       <StatusBadge status={item.status} />
                     </td>
                     <td style={{ padding: "15px 20px", textAlign: "center" }}>
-                      <button onClick={() => deleteTask(item.id)} style={{
+                      <button onClick={() => setPendingDelete(item.id)} style={{
                         padding: "6px 14px", borderRadius: 8,
                         background: "#FEF2F2", color: "#EF4444",
                         border: "1px solid #FECACA",
@@ -580,6 +585,15 @@ function TaskList() {
           </div>
         </form>
       </SideModal>
+
+      <Toast toast={toast} onClose={() => {}} />
+      <ConfirmModal
+        open={!!pendingDelete}
+        title="Delete Task"
+        message="Are you sure you want to delete this task? This action cannot be undone."
+        onConfirm={confirmDeleteTask}
+        onCancel={() => setPendingDelete(null)}
+      />
     </div>
   );
 }

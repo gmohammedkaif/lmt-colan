@@ -20,14 +20,16 @@ function AddFinalSource() {
     });
   };
 
+  const [submitted, setSubmitted] = useState(false);
+
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    console.log(formData);
+    setSubmitted(true);
 
-    alert("Final source added successfully!");
-
-    navigate("/dashboard/final-resource");
+    setTimeout(() => {
+      navigate("/dashboard/final-resource");
+    }, 1500);
   };
 
   return (
@@ -45,12 +47,19 @@ function AddFinalSource() {
         </div>
 
         <button
+          type="button"
           onClick={() => navigate("/dashboard/final-resource")}
           className="px-5 py-2.5 rounded-xl border border-slate-200 bg-white text-sm font-medium text-slate-700 hover:bg-slate-50"
         >
           Back
         </button>
       </div>
+
+      {submitted && (
+        <div className="mb-6 bg-emerald-50 border border-emerald-200 text-emerald-700 px-5 py-4 rounded-xl text-sm font-semibold">
+          Final source added successfully! Redirecting...
+        </div>
+      )}
 
       {/* Form */}
       <form

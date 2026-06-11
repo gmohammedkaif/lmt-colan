@@ -35,6 +35,11 @@ const projects = [
 
 function TimeMaterial() {
   const [statusFilter, setStatusFilter] = useState("All");
+  const [appliedFilter, setAppliedFilter] = useState("All");
+
+  const filteredProjects = appliedFilter === "All"
+    ? projects
+    : projects.filter((p) => p.status === appliedFilter);
 
   return (
     <>
@@ -74,11 +79,17 @@ function TimeMaterial() {
               <option>Cancelled</option>
             </select>
 
-            <button className="bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-sm font-semibold">
+            <button
+              onClick={() => setAppliedFilter(statusFilter)}
+              className="bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-sm font-semibold"
+            >
               Apply
             </button>
 
-            <button className="border border-slate-200 rounded-xl text-sm font-semibold text-slate-700">
+            <button
+              onClick={() => { setStatusFilter("All"); setAppliedFilter("All"); }}
+              className="border border-slate-200 rounded-xl text-sm font-semibold text-slate-700"
+            >
               Reset
             </button>
           </div>
@@ -109,70 +120,81 @@ function TimeMaterial() {
               </thead>
 
               <tbody>
-                              {projects.map((project) => (
-                  <tr
-                    key={project.id}
-                    className="border-b border-slate-100 hover:bg-slate-50"
-                  >
-                    <td className="px-6 py-5 font-semibold text-slate-900">
-                      {project.code}
-                    </td>
-
-                    <td className="px-6 py-5 text-slate-700">
-                      {project.name}
-                    </td>
-
-                    <td className="px-6 py-5 text-slate-700">
-                      {project.client}
-                    </td>
-
-                    <td className="px-6 py-5">
-                      <span
-                        className={`px-3 py-1 rounded-full text-xs font-bold ${
-                          project.status === "Completed"
-                            ? "bg-green-100 text-green-600"
-                            : project.status === "Hold"
-                            ? "bg-orange-100 text-orange-600"
-                            : project.status === "Cancelled"
-                            ? "bg-red-100 text-red-600"
-                            : "bg-blue-100 text-blue-600"
-                        }`}
-                      >
-                        {project.status}
-                      </span>
-                    </td>
-
-                    <td className="px-6 py-5 font-semibold text-slate-900">
-                      {project.hours}
-                    </td>
-
-                    <td className="px-6 py-5">
-                      <div className="flex gap-2">
-                        <button className="w-9 h-9 rounded-xl bg-blue-50 hover:bg-blue-100 text-blue-600 flex items-center justify-center">
-                          <FiEye />
-                        </button>
-
-                        <button className="w-9 h-9 rounded-xl bg-green-50 hover:bg-green-100 text-green-600 flex items-center justify-center">
-                          <FiEdit2 />
-                        </button>
-
-                        <button className="w-9 h-9 rounded-xl bg-red-50 hover:bg-red-100 text-red-600 flex items-center justify-center">
-                          <FiTrash2 />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-
-                {projects.length === 0 && (
+                {filteredProjects.length === 0 ? (
                   <tr>
                     <td
                       colSpan="6"
                       className="text-center py-10 text-slate-500"
                     >
-                      No records found
+                      {appliedFilter !== "All"
+                        ? "No records match the selected filter"
+                        : "No records found"}
                     </td>
                   </tr>
+                ) : (
+                  filteredProjects.map((project) => (
+                    <tr
+                      key={project.id}
+                      className="border-b border-slate-100 hover:bg-slate-50"
+                    >
+                      <td className="px-6 py-5 font-semibold text-slate-900">
+                        {project.code}
+                      </td>
+
+                      <td className="px-6 py-5 text-slate-700">
+                        {project.name}
+                      </td>
+
+                      <td className="px-6 py-5 text-slate-700">
+                        {project.client}
+                      </td>
+
+                      <td className="px-6 py-5">
+                        <span
+                          className={`px-3 py-1 rounded-full text-xs font-bold ${
+                            project.status === "Completed"
+                              ? "bg-green-100 text-green-600"
+                              : project.status === "Hold"
+                              ? "bg-orange-100 text-orange-600"
+                              : project.status === "Cancelled"
+                              ? "bg-red-100 text-red-600"
+                              : "bg-blue-100 text-blue-600"
+                          }`}
+                        >
+                          {project.status}
+                        </span>
+                      </td>
+
+                      <td className="px-6 py-5 font-semibold text-slate-900">
+                        {project.hours}
+                      </td>
+
+                      <td className="px-6 py-5">
+                        <div className="flex gap-2">
+                          <button
+                            className="w-9 h-9 rounded-xl bg-blue-50 hover:bg-blue-100 text-blue-600 flex items-center justify-center"
+                            aria-label="View project"
+                          >
+                            <FiEye />
+                          </button>
+
+                          <button
+                            className="w-9 h-9 rounded-xl bg-green-50 hover:bg-green-100 text-green-600 flex items-center justify-center"
+                            aria-label="Edit project"
+                          >
+                            <FiEdit2 />
+                          </button>
+
+                          <button
+                            className="w-9 h-9 rounded-xl bg-red-50 hover:bg-red-100 text-red-600 flex items-center justify-center"
+                            aria-label="Delete project"
+                          >
+                            <FiTrash2 />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))
                 )}
               </tbody>
             </table>

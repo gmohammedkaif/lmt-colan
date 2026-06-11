@@ -9,40 +9,164 @@ import {
   FiX,
   FiBriefcase,
   FiRefreshCcw,
-
+  FiAlertCircle,
 } from "react-icons/fi";
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import SideModal from "../../components/layout/ui/SideModal";
+import { jsPDF } from "jspdf";
+import autoTable from "jspdf-autotable";
+import ConfirmModal from "../../utils/ConfirmModal";
+import { useToast, Toast } from "../../utils/Toast";
 
-const entries = [
-  {
-    id: 1,
-    date: "20/05/2026",
-    project: "No Project",
-    module: "General",
-    task: "Working on LMT Timesheet UI",
-    start: "10:30 AM",
-    end: "08:00 PM",
-    hours: "09:30",
-    status: "Non Billable",
-  },
-  {
-    id: 2,
-    date: "19/05/2026",
-    project: "ERP Portal",
-    module: "Dashboard",
-    task: "Dashboard layout update",
-    start: "10:30 AM",
-    end: "08:00 PM",
-    hours: "09:30",
-    status: "Billable",
-  },
-];
+const STORAGE_KEY = "cipl_timesheets";
+
+function initEntries() {
+  try {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved) return JSON.parse(saved);
+  } catch {
+    // corrupted data, use defaults
+  }
+  const defaults = [
+    { id: 1, date: "20/05/2026", project: "No Project", module: "General", task: "Working on LMT Timesheet UI", start: "10:30 AM", end: "08:00 PM", hours: "09:30", status: "Non Billable" },
+    { id: 2, date: "19/05/2026", project: "ERP Portal", module: "Dashboard", task: "Dashboard layout update", start: "10:30 AM", end: "08:00 PM", hours: "09:30", status: "Billable" },
+  ];
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(defaults));
+  } catch {}
+  return defaults;
+}
+
+function calcHours(start, end) {
+  if (!start || !end) return "";
+  const [sh, sm] = start.split(":").map(Number);
+  const [eh, em] = end.split(":").map(Number);
+  let diff = (eh * 60 + em) - (sh * 60 + sm);
+  if (diff < 0) diff += 24 * 60;
+  const h = Math.floor(diff / 60);
+  const m = diff % 60;
+  return `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`;
+}
+
+function formatTimeForDisplay(timeStr) {
+  if (!timeStr) return "";
+  const [h, m] = timeStr.split(":").map(Number);
+  const ampm = h >= 12 ? "PM" : "AM";
+  const h12 = h % 12 || 12;
+  return `${String(h12).padStart(2, "0")}:${String(m).padStart(2, "0")} ${ampm}`;
+}
 
 function Timesheet() {
   const [openModal, setOpenModal] = useState(false);
+  const [entries, setEntries] = useState(initEntries);
+  const [form, setForm] = useState({ project: "", module: "", task: "", date: "", start: "", end: "", hours: "", status: "Billable" });
+  const [errors, setErrors] = useState({});
+  const [touched, setTouched] = useState({});
+  const [pendingDelete, setPendingDelete] = useState(null);
+  const { toast, showToast } = useToast();
   const navigate = useNavigate();
+
+  useEffect(() => { localStorage.setItem(STORAGE_KEY, JSON.stringify(entries)); }, [entries]);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setErrors((p) => ({ ...p, [name]: "" }));
+    setTouched((p) => ({ ...p, [name]: true }));
+    setForm((prev) => {
+      const next = { ...prev, [name]: value };
+      if ((name === "start" || name === "end") && next.start && next.end) {
+        next.hours = calcHours(next.start, next.end);
+      }
+      return next;
+    });
+  };
+
+  const handleBlur = (f) => setTouched((p) => ({ ...p, [f]: true }));
+
+  const openAddModal = () => {
+    setForm({ project: "", module: "", task: "", date: "", start: "", end: "", hours: "", status: "Billable" });
+    setErrors({});
+    setTouched({});
+    setOpenModal(true);
+  };
+
+  const validate = () => {
+    const e = {};
+    if (!form.project) e.project = "Select a project";
+    if (!form.module) e.module = "Select a module";
+    if (!form.task.trim()) e.task = "Task description required";
+    else if (form.task.trim().length < 3) e.task = "At least 3 characters";
+    if (!form.date) e.date = "Date required";
+    if (!form.start) e.start = "Start time required";
+    if (!form.end) e.end = "End time required";
+    if (!form.hours.trim()) e.hours = "Set start & end time to auto-calculate";
+    return e;
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const nt = { project: true, module: true, task: true, date: true, start: true, end: true, hours: true };
+    setTouched((p) => ({ ...p, ...nt }));
+    const ve = validate();
+    setErrors(ve);
+    if (Object.keys(ve).length) return;
+
+    const newEntry = {
+      id: Date.now(),
+      date: form.date.split("-").reverse().join("/"),
+      project: form.project,
+      module: form.module,
+      task: form.task.trim(),
+      start: form.start,
+      end: form.end,
+      hours: form.hours.trim(),
+      status: form.status,
+    };
+    setEntries((prev) => [newEntry, ...prev]);
+    setOpenModal(false);
+  };
+
+  const confirmDelete = () => {
+    if (!pendingDelete) return;
+    setEntries((prev) => prev.filter((item) => item.id !== pendingDelete));
+    setPendingDelete(null);
+    showToast("Timesheet entry deleted", "delete");
+  };
+
+  const exportPDF = useCallback(() => {
+    const doc = new jsPDF();
+    doc.setFontSize(18);
+    doc.text("Timesheet Report", 14, 20);
+    doc.setFontSize(10);
+    doc.text(`Generated: ${new Date().toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" })}`, 14, 28);
+
+    const tableData = entries.map((e) => [
+      e.date, e.project, e.module, e.task,
+      formatTimeForDisplay(e.start), formatTimeForDisplay(e.end),
+      e.hours, e.status,
+    ]);
+
+    autoTable(doc, {
+      startY: 34,
+      head: [["Date", "Project", "Module", "Task", "Start", "End", "Hours", "Status"]],
+      body: tableData,
+      styles: { fontSize: 8 },
+      headStyles: { fillColor: [30, 41, 59], textColor: 255, fontSize: 8 },
+      alternateRowStyles: { fillColor: [248, 250, 252] },
+    });
+
+    doc.save(`timesheet-report-${Date.now()}.pdf`);
+  }, [entries]);
+
+  const hasError = (f) => errors[f] && touched[f];
+  const errClass = (f) => hasError(f)
+    ? "border-red-300 bg-red-50/40 focus:ring-4 focus:ring-red-100 focus:border-red-400"
+    : "border-slate-200 outline-none focus:ring-2 focus:ring-blue-100 focus:border-blue-300";
+
+  const ErrMsg = ({ field }) => hasError(field) ? (
+    <p className="flex items-center gap-1 text-xs font-medium text-red-500 mt-1.5"><FiAlertCircle size={11} />{errors[field]}</p>
+  ) : null;
 
   return (
     <>
@@ -235,15 +359,15 @@ function Timesheet() {
           </div>
 
           <div className="flex gap-3">
-            <button
-              onClick={() => setOpenModal(true)}
+              <button
+              onClick={openAddModal}
               className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-5 py-3 rounded-xl text-sm font-semibold"
             >
               <FiPlus />
               Add Timesheet
             </button>
 
-            <button className="flex items-center gap-2 bg-white border border-slate-200 px-5 py-3 rounded-xl text-sm font-semibold text-slate-700">
+            <button onClick={exportPDF} className="flex items-center gap-2 bg-white border border-slate-200 px-5 py-3 rounded-xl text-sm font-semibold text-slate-700 hover:bg-slate-50 transition">
               <FiDownload />
               Export
             </button>
@@ -300,11 +424,15 @@ function Timesheet() {
                     </td>
 
                     <td className="px-6 py-5 text-sm text-slate-700">
-                      {item.start}
+                      {item.start.includes(":") && !item.start.includes("AM") && !item.start.includes("PM")
+                        ? formatTimeForDisplay(item.start)
+                        : item.start}
                     </td>
 
                     <td className="px-6 py-5 text-sm text-slate-700">
-                      {item.end}
+                      {item.end.includes(":") && !item.end.includes("AM") && !item.end.includes("PM")
+                        ? formatTimeForDisplay(item.end)
+                        : item.end}
                     </td>
 
                     <td className="px-6 py-5">
@@ -336,7 +464,7 @@ function Timesheet() {
                           <FiEdit2 />
                         </button>
 
-                        <button className="w-9 h-9 rounded-xl bg-red-50 hover:bg-red-100 text-red-600 flex items-center justify-center">
+                        <button onClick={() => setPendingDelete(item.id)} className="w-9 h-9 rounded-xl bg-red-50 hover:bg-red-100 text-red-600 flex items-center justify-center">
                           <FiTrash2 />
                         </button>
                       </div>
@@ -357,7 +485,7 @@ function Timesheet() {
         onClose={() => setOpenModal(false)}
         width="640px"
       >
-        <div>
+        <form onSubmit={handleSubmit}>
             {/* FORM */}
             <div className="space-y-5">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
@@ -366,12 +494,14 @@ function Timesheet() {
                     Project
                   </label>
 
-                  <select className="mt-2 w-full px-4 py-3 rounded-xl border border-slate-200 outline-none">
-                    <option>Select Project</option>
-                    <option>No Project</option>
-                    <option>ERP Portal</option>
-                    <option>Timesheet System</option>
+                  <select name="project" value={form.project} onChange={handleChange} onBlur={() => handleBlur("project")}
+                    className={`mt-2 w-full px-4 py-3 rounded-xl border text-sm outline-none transition-all duration-200 ${errClass("project")}`}>
+                    <option value="">Select Project</option>
+                    <option value="No Project">No Project</option>
+                    <option value="ERP Portal">ERP Portal</option>
+                    <option value="Timesheet System">Timesheet System</option>
                   </select>
+                  <ErrMsg field="project" />
                 </div>
 
                 <div>
@@ -379,12 +509,14 @@ function Timesheet() {
                     Module
                   </label>
 
-                  <select className="mt-2 w-full px-4 py-3 rounded-xl border border-slate-200 outline-none">
-                    <option>Select Module</option>
-                    <option>General</option>
-                    <option>Dashboard</option>
-                    <option>UI</option>
+                  <select name="module" value={form.module} onChange={handleChange} onBlur={() => handleBlur("module")}
+                    className={`mt-2 w-full px-4 py-3 rounded-xl border text-sm outline-none transition-all duration-200 ${errClass("module")}`}>
+                    <option value="">Select Module</option>
+                    <option value="General">General</option>
+                    <option value="Dashboard">Dashboard</option>
+                    <option value="UI">UI</option>
                   </select>
+                  <ErrMsg field="module" />
                 </div>
               </div>
 
@@ -393,11 +525,10 @@ function Timesheet() {
                   Task Description
                 </label>
 
-                <textarea
-                  rows="5"
-                  placeholder="Write work details..."
-                  className="mt-2 w-full px-4 py-3 rounded-xl border border-slate-200 outline-none resize-none"
-                />
+                <textarea name="task" value={form.task} onChange={handleChange} onBlur={() => handleBlur("task")}
+                  rows="5" placeholder="Write work details..."
+                  className={`mt-2 w-full px-4 py-3 rounded-xl border text-sm outline-none resize-none transition-all duration-200 ${errClass("task")}`} />
+                <ErrMsg field="task" />
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
@@ -406,10 +537,9 @@ function Timesheet() {
                     Date
                   </label>
 
-                  <input
-                    type="date"
-                    className="mt-2 w-full px-4 py-3 rounded-xl border border-slate-200 outline-none"
-                  />
+                  <input type="date" name="date" value={form.date} onChange={handleChange} onBlur={() => handleBlur("date")}
+                    className={`mt-2 w-full px-4 py-3 rounded-xl border text-sm outline-none transition-all duration-200 ${errClass("date")}`} />
+                  <ErrMsg field="date" />
                 </div>
 
                 <div>
@@ -417,10 +547,9 @@ function Timesheet() {
                     Start Time
                   </label>
 
-                  <input
-                    type="time"
-                    className="mt-2 w-full px-4 py-3 rounded-xl border border-slate-200 outline-none"
-                  />
+                  <input type="time" name="start" value={form.start} onChange={handleChange} onBlur={() => handleBlur("start")}
+                    className={`mt-2 w-full px-4 py-3 rounded-xl border text-sm outline-none transition-all duration-200 ${errClass("start")}`} />
+                  <ErrMsg field="start" />
                 </div>
 
                 <div>
@@ -428,10 +557,9 @@ function Timesheet() {
                     End Time
                   </label>
 
-                  <input
-                    type="time"
-                    className="mt-2 w-full px-4 py-3 rounded-xl border border-slate-200 outline-none"
-                  />
+                  <input type="time" name="end" value={form.end} onChange={handleChange} onBlur={() => handleBlur("end")}
+                    className={`mt-2 w-full px-4 py-3 rounded-xl border text-sm outline-none transition-all duration-200 ${errClass("end")}`} />
+                  <ErrMsg field="end" />
                 </div>
               </div>
 
@@ -441,11 +569,10 @@ function Timesheet() {
                     Hours Worked
                   </label>
 
-                  <input
-                    type="text"
-                    placeholder="09:30"
-                    className="mt-2 w-full px-4 py-3 rounded-xl border border-slate-200 outline-none"
-                  />
+                  <input type="text" name="hours" value={form.hours} readOnly
+                    placeholder="Auto-calculated"
+                    className={`mt-2 w-full px-4 py-3 rounded-xl border text-sm bg-slate-50 outline-none transition-all duration-200 ${errClass("hours")}`} />
+                  <ErrMsg field="hours" />
                 </div>
 
                 <div>
@@ -453,9 +580,10 @@ function Timesheet() {
                     Work Type
                   </label>
 
-                  <select className="mt-2 w-full px-4 py-3 rounded-xl border border-slate-200 outline-none">
-                    <option>Billable</option>
-                    <option>Non Billable</option>
+                  <select name="status" value={form.status} onChange={handleChange}
+                    className="mt-2 w-full px-4 py-3 rounded-xl border border-slate-200 text-sm outline-none transition-all duration-200">
+                    <option value="Billable">Billable</option>
+                    <option value="Non Billable">Non Billable</option>
                   </select>
                 </div>
               </div>
@@ -463,19 +591,28 @@ function Timesheet() {
 
             {/* FOOTER */}
             <div className="sticky bottom-0 bg-white border-t border-slate-100 p-5 flex justify-end gap-3">
-              <button
+              <button type="button"
                 onClick={() => setOpenModal(false)}
-                className="px-5 py-3 rounded-xl border border-slate-200 text-sm font-semibold text-slate-700"
+                className="px-5 py-3 rounded-xl border border-slate-200 text-sm font-semibold text-slate-700 hover:bg-slate-50 transition"
               >
                 Cancel
               </button>
 
-              <button className="px-6 py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold">
+              <button type="submit" className="px-6 py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold transition">
                 Save Timesheet
               </button>
             </div>
-          </div>
+        </form>
         </SideModal>
+      <Toast toast={toast} onClose={() => {}} />
+
+      <ConfirmModal
+        open={!!pendingDelete}
+        title="Delete Timesheet Entry"
+        message="Are you sure you want to delete this timesheet entry? This action cannot be undone."
+        onConfirm={confirmDelete}
+        onCancel={() => setPendingDelete(null)}
+      />
     </>
   );
 }

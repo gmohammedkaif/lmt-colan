@@ -11,6 +11,8 @@ import {
   Trash2,
   Upload,
 } from "lucide-react";
+import ConfirmModal from "../../utils/ConfirmModal";
+import { useToast, Toast } from "../../utils/Toast";
 
 const courses = [
   "Select",
@@ -93,6 +95,9 @@ const emptyExperience = {
 
 export default function QualificationDetails() {
   const [openModal, setOpenModal] = useState(false);
+  const [pendingDelete, setPendingDelete] = useState(null);
+  const [deleteType, setDeleteType] = useState(null);
+  const { toast, showToast } = useToast();
   const [savedData, setSavedData] = useState({
     qualifications: [],
     experiences: [],
@@ -151,14 +156,19 @@ export default function QualificationDetails() {
     });
   };
 
-  const removeQualificationRow = (index) => {
-    const updated = form.qualifications.filter((_, i) => i !== index);
-    setForm({ ...form, qualifications: updated });
-  };
-
-  const removeExperienceRow = (index) => {
-    const updated = form.experiences.filter((_, i) => i !== index);
-    setForm({ ...form, experiences: updated });
+  const confirmRemove = () => {
+    if (pendingDelete === null) return;
+    if (deleteType === "qualification") {
+      const updated = form.qualifications.filter((_, i) => i !== pendingDelete);
+      setForm({ ...form, qualifications: updated });
+      showToast("Qualification row removed", "delete");
+    } else {
+      const updated = form.experiences.filter((_, i) => i !== pendingDelete);
+      setForm({ ...form, experiences: updated });
+      showToast("Experience row removed", "delete");
+    }
+    setPendingDelete(null);
+    setDeleteType(null);
   };
 
   const handleSave = () => {
@@ -408,7 +418,7 @@ export default function QualificationDetails() {
 
                           <td className="px-2 py-2 text-center">
                             <button
-                              onClick={() => removeQualificationRow(index)}
+                              onClick={() => { setPendingDelete(index); setDeleteType("qualification"); }}
                               className="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-red-50 text-red-500 hover:bg-red-100"
                             >
                               <Trash2 size={16} />
@@ -570,7 +580,7 @@ export default function QualificationDetails() {
 
                           <td className="px-2 py-2 text-center">
                             <button
-                              onClick={() => removeExperienceRow(index)}
+                              onClick={() => { setPendingDelete(index); setDeleteType("experience"); }}
                               className="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-red-50 text-red-500 hover:bg-red-100"
                             >
                               <Trash2 size={16} />
@@ -640,6 +650,15 @@ export default function QualificationDetails() {
     </div>
   </>
 </SideModal>
+
+      <Toast toast={toast} onClose={() => {}} />
+      <ConfirmModal
+        open={pendingDelete !== null}
+        title={deleteType === "qualification" ? "Remove Qualification" : "Remove Experience"}
+        message={`Are you sure you want to remove this ${deleteType === "qualification" ? "qualification" : "experience"} row? This action cannot be undone.`}
+        onConfirm={confirmRemove}
+        onCancel={() => { setPendingDelete(null); setDeleteType(null); }}
+      />
     </>
   );
 }

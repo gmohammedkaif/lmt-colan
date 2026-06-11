@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { FiPlus, FiFilter, FiEye, FiX, FiTrash2 } from "react-icons/fi";
 import SideModal from "../../components/layout/ui/SideModal";
+import ConfirmModal from "../../utils/ConfirmModal";
+import { useToast, Toast } from "../../utils/Toast";
 
 const defaultRecords = [
   {
@@ -58,6 +60,8 @@ function ClientTimesheet() {
   const [viewItem, setViewItem] = useState(null);
   const [records, setRecords] = useState(defaultRecords);
   const [errors, setErrors] = useState({});
+  const [pendingDelete, setPendingDelete] = useState(null);
+  const { toast, showToast } = useToast();
 
   const [formData, setFormData] = useState({
     project: "Select",
@@ -139,10 +143,13 @@ function ClientTimesheet() {
     setOpenModal(false);
   };
 
-  const handleDelete = (id) => {
-    const updated = records.filter((item) => item.id !== id);
+  const confirmDelete = () => {
+    if (!pendingDelete) return;
+    const updated = records.filter((item) => item.id !== pendingDelete);
     setRecords(updated);
     saveToLocalStorage(updated);
+    setPendingDelete(null);
+    showToast("Client timesheet entry deleted", "delete");
   };
 
   const clearError = (field) => {
@@ -244,7 +251,7 @@ function ClientTimesheet() {
                       </button>
 
                       <button
-                        onClick={() => handleDelete(item.id)}
+                        onClick={() => setPendingDelete(item.id)}
                         className="w-10 h-10 rounded-xl bg-red-50 hover:bg-red-100 flex items-center justify-center transition"
                       >
                         <FiTrash2 className="text-red-500" />
@@ -440,6 +447,15 @@ function ClientTimesheet() {
             <DetailRow label="Comments" value={viewItem.comments} />
           </div>}
         </SideModal>
+
+      <Toast toast={toast} onClose={() => {}} />
+      <ConfirmModal
+        open={!!pendingDelete}
+        title="Delete Client Timesheet Entry"
+        message="Are you sure you want to delete this client timesheet entry? This action cannot be undone."
+        onConfirm={confirmDelete}
+        onCancel={() => setPendingDelete(null)}
+      />
     </div>
   );
 }

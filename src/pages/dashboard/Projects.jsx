@@ -13,6 +13,7 @@ import {
   FiAlertTriangle,
 } from "react-icons/fi";
 import SideModal from "../../components/layout/ui/SideModal";
+import { useToast, Toast } from "../../utils/Toast";
 
 const STORAGE_KEY = "cipl_projects";
 
@@ -104,6 +105,7 @@ function Projects() {
   const [editId, setEditId] = useState(null);
   const [errors, setErrors] = useState({});
   const [form, setForm] = useState(emptyForm);
+  const { toast, showToast } = useToast();
 
   const isEditMode = editId !== null;
 
@@ -258,6 +260,7 @@ function Projects() {
 
     setProjects((prev) => prev.filter((project) => project.id !== deleteProject.id));
     setDeleteProject(null);
+    showToast("Project deleted", "delete");
   };
 
   return (
@@ -689,6 +692,8 @@ function Projects() {
           </div>
         </div>
       )}
+
+      <Toast toast={toast} onClose={() => {}} />
     </div>
   );
 }

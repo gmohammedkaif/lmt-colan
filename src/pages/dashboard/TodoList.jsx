@@ -5,16 +5,26 @@ import {
   FiTrash2,
   FiCheckCircle,
 } from "react-icons/fi";
+import ConfirmModal from "../../utils/ConfirmModal";
+import { useToast, Toast } from "../../utils/Toast";
 
 const STORAGE_KEY = "cipl_todos";
 const TOAST_KEY = "cipl_todo_toast";
 
 function TodoList() {
   const [mode, setMode] = useState("day");
-  const [toast, setToast] = useState("");
-  const [todos, setTodos] = useState(() => {
-    return JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
-  });
+  const [pendingDelete, setPendingDelete] = useState(null);
+
+  const loadTodos = () => {
+    try {
+      const data = localStorage.getItem(STORAGE_KEY);
+      return data ? JSON.parse(data) : [];
+    } catch {
+      return [];
+    }
+  };
+
+  const [todos, setTodos] = useState(loadTodos);
 
   const today = new Date();
 
@@ -24,26 +34,30 @@ function TodoList() {
     year: "numeric",
   });
 
-  const showToast = (message) => {
-    setToast(message);
-
-    setTimeout(() => {
-      setToast("");
-    }, 3000);
-  };
+  const { toast, showToast } = useToast();
 
   useEffect(() => {
     const message = sessionStorage.getItem(TOAST_KEY);
 
     if (message) {
-      showToast(message);
+      showToast(message, "success");
       sessionStorage.removeItem(TOAST_KEY);
     }
   }, []);
 
-  const deleteTodo = (id) => {
-    setTodos((prev) => prev.filter((item) => item.id !== id));
-    showToast("To-Do deleted successfully");
+  useEffect(() => {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(todos));
+    } catch {
+      console.warn("Failed to save todos");
+    }
+  }, [todos]);
+
+  const confirmDeleteTodo = () => {
+    if (!pendingDelete) return;
+    setTodos((prev) => prev.filter((item) => item.id !== pendingDelete));
+    setPendingDelete(null);
+    showToast("To-Do deleted successfully", "delete");
   };
 
   const toggleStatus = (id) => {
@@ -58,15 +72,11 @@ function TodoList() {
       ),
     );
 
-    showToast("Status updated successfully");
+    showToast("Status updated successfully", "success");
   };
   return (
     <div className="space-y-6 relative">
-      {toast && (
-        <div className="fixed top-24 right-8 z-50 bg-emerald-500 text-white px-5 py-3 rounded-xl shadow-lg text-sm font-semibold">
-          {toast}
-        </div>
-      )}
+      <Toast toast={toast} onClose={() => {}} />
 
       <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
@@ -180,7 +190,7 @@ function TodoList() {
                         </button>
 
                         <button
-                          onClick={() => deleteTodo(todo.id)}
+                          onClick={() => setPendingDelete(todo.id)}
                           className="cursor-pointer w-9 h-9 rounded-lg bg-rose-50 text-rose-600 border border-rose-100 hover:bg-rose-100 flex items-center justify-center"
                           title="Delete"
                         >
@@ -195,6 +205,14 @@ function TodoList() {
           </table>
         </div>
       </div>
+
+      <ConfirmModal
+        open={!!pendingDelete}
+        title="Delete To-Do"
+        message="Are you sure you want to delete this to-do? This action cannot be undone."
+        onConfirm={confirmDeleteTodo}
+        onCancel={() => setPendingDelete(null)}
+      />
     </div>
   );
 }

@@ -4,3 +4,10 @@ body {
   margin: 0;
   font-family: Inter, Arial, sans-serif;
 }
+
+/* Word-break for all table data cells to prevent overflow with long content */
+td {
+  word-break: break-word;
+  overflow-wrap: break-word;
+  white-space: normal;
+}

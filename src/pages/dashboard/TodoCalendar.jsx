@@ -47,9 +47,14 @@ function TodoCalendar() {
   const [currentDate, setCurrentDate] = useState(
     new Date(today.getFullYear(), today.getMonth(), 1),
   );
-  const [todos, setTodos] = useState(
-    () => JSON.parse(localStorage.getItem(STORAGE_KEY)) || [],
-  );
+  const [todos, setTodos] = useState(() => {
+    try {
+      const data = localStorage.getItem(STORAGE_KEY);
+      return data ? JSON.parse(data) : [];
+    } catch {
+      return [];
+    }
+  });
   const [selectedDate, setSelectedDate] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [form, setForm] = useState({
